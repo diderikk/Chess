@@ -12,9 +12,58 @@ export default class Pawn extends ChessPiece {
     this.image = color === ChessColor.WHITE ? WhiteImage : BlackImage;
   }
 
-  move(board: ChessPiece[][]): ChessPiece[][] {
-    throw new Error("Method not implemented.");
+  move(movePosition: RowColumn, board: ChessPiece[][]): ChessPiece[][] {
+    const boardCopy = [...board];
+    if (
+      this.validMoves(boardCopy).filter(
+        (validMove) =>
+          validMove.row === movePosition.row &&
+          validMove.column === movePosition.column
+      ).length > 0
+    ) {
+      if (
+        movePosition.column === this.column + 1 &&
+        movePosition.row === this.row + 1 &&
+        !board[this.row + 1][this.column + 1]
+      ) {
+        board[this.row][this.column + 1] = null;
+      }
+      if (
+        movePosition.column === this.column - 1 &&
+        movePosition.row === this.row + 1 &&
+        !board[this.row + 1][this.column - 1]
+      ) {
+        board[this.row][this.column - 1] = null;
+      }
+      if (
+        movePosition.column === this.column + 1 &&
+        movePosition.row === this.row - 1 &&
+        !board[this.row - 1][this.column + 1]
+      ) {
+        board[this.row][this.column + 1] = null;
+      }
+      if (
+        movePosition.column === this.column - 1 &&
+        movePosition.row === this.row - 1 &&
+        !board[this.row - 1][this.column - 1]
+      ) {
+        board[this.row][this.column - 1] = null;
+      }
+      boardCopy[this.row][this.column] = null;
+      this.row = movePosition.row;
+      this.column = movePosition.column;
+      boardCopy[movePosition.row][movePosition.column] = this;
+    }
+    this.moved += 1;
+    return boardCopy;
   }
+
+  protectMoves(board: ChessPiece[][]): RowColumn[] {
+    return this.color === ChessColor.WHITE
+      ? this.whiteProtectMoves(board)
+      : this.blackProtectMoves(board);
+  }
+
   validMoves(board: ChessPiece[][]): RowColumn[] {
     return this.color === ChessColor.WHITE
       ? this.validWhiteMoves(board)
@@ -44,6 +93,23 @@ export default class Pawn extends ChessPiece {
       board[this.row - 1][this.column + 1].color === ChessColor.WHITE
     )
       res.push({ row: this.row - 1, column: this.column + 1 });
+
+    if (
+      board[this.row][this.column + 1] &&
+      board[this.row][this.column + 1].color === ChessColor.WHITE &&
+      board[this.row][this.column + 1] instanceof Pawn &&
+      this.row === 3 &&
+      board[this.row][this.column + 1].moved === 1
+    )
+      res.push({ row: this.row - 1, column: this.column + 1 });
+    if (
+      board[this.row][this.column - 1] &&
+      board[this.row][this.column - 1].color === ChessColor.WHITE &&
+      board[this.row][this.column - 1] instanceof Pawn &&
+      this.row === 3   &&
+      board[this.row][this.column - 1].moved === 1
+    )
+      res.push({ row: this.row - 1, column: this.column - 1 });
     return res;
   }
 
@@ -70,6 +136,37 @@ export default class Pawn extends ChessPiece {
       board[this.row + 1][this.column + 1].color === ChessColor.BLACK
     )
       res.push({ row: this.row + 1, column: this.column + 1 });
+
+    if (
+      board[this.row][this.column + 1] &&
+      board[this.row][this.column + 1].color === ChessColor.BLACK &&
+      board[this.row][this.column + 1] instanceof Pawn &&
+      this.row === 4 &&
+      board[this.row][this.column + 1].moved === 1
+    )
+      res.push({ row: this.row + 1, column: this.column + 1 });
+    if (
+      board[this.row][this.column - 1] &&
+      board[this.row][this.column - 1].color === ChessColor.BLACK &&
+      board[this.row][this.column - 1] instanceof Pawn &&
+      this.row === 4 &&
+      board[this.row][this.column - 1].moved === 1
+    )
+      res.push({ row: this.row + 1, column: this.column - 1 });
     return res;
+  }
+
+  private blackProtectMoves(board: ChessPiece[][]): RowColumn[] {
+    return [
+      { row: this.row - 1, column: this.column - 1 },
+      { row: this.row - 1, column: this.column + 1 },
+    ];
+  }
+
+  private whiteProtectMoves(board: ChessPiece[][]): RowColumn[] {
+    return [
+      { row: this.row + 1, column: this.column - 1 },
+      { row: this.row + 1, column: this.column + 1 },
+    ];
   }
 }

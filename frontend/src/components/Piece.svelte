@@ -1,25 +1,30 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
+  import type RowColumn from "../types/RowColumn.type";
   import type ChessPiece from "../utils/chess/ChessPiece";
 
   const dispatch = createEventDispatcher();
 
   export let piece: ChessPiece = null;
-  export let index: number = 0;
-  // TODO: Create a store
-  export let board: ChessPiece[][] = [];
-  export let validMove: boolean = false
+  export let row: number = 0;
+  export let column: number = 0;
+  export let validMove: boolean = false;
+  export let isChecked: boolean = false;
 
   function handleClick() {
-    if (piece) dispatch("click", piece.validMoves(board));
-    else dispatch("click", []);
+    if (validMove)
+      dispatch("move", { row, column } as RowColumn);
+    else dispatch("showValidMoves", piece);
   }
-
 </script>
 
-<div id="container" class={index % 2 === 0 ? "even" : "odd"} on:click={handleClick}>
+<div
+  id="container"
+  class={(row+column) % 2 === 0 ? "even" : "odd"}
+  on:click={handleClick}
+>
   {#if piece}
-    <img src={piece.image} alt="piece icon" />
+    <img class:checked={isChecked} src={piece.image} alt="piece icon" />
   {/if}
   {#if validMove}
     <div id="green-dot" />
@@ -43,7 +48,11 @@
     background-color: green;
     position: absolute;
   }
-  img {
+  .checked {
+    border-radius: 50%;
+    background-color: rgba(255, 0, 0, 0.5);
+  } 
+    img {
     width: 90%;
     height: 90%;
   }

@@ -1,4 +1,6 @@
 import ChessColor from "../../enums/ChessColor.enum";
+import Finished from "../../enums/Finished.enum";
+import type RowColumn from "../../types/RowColumn.type";
 import type ChessPiece from "./ChessPiece";
 import Bishop from "./pieces/Bishop";
 import King from "./pieces/King";
@@ -8,8 +10,174 @@ import Queen from "./pieces/Queen";
 import Rook from "./pieces/Rook";
 
 export default class ChessBoard {
+  static isFinished(turn: ChessColor, board: ChessPiece[][]): Finished {
 
-  static isFinished(chessBoard: ChessPiece[][]): boolean {
+    const validMoves: RowColumn[] = [];
+    if(this.isChecked(turn, board)){
+      for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+          if (
+            board[i][j] &&
+            board[i][j].color === turn
+          ) {
+            [...validMoves, ChessBoard.filterValidMovesChecked(board[i][j], board)]
+          }
+        }
+      }
+      if(validMoves.length === 0) return Finished.MATE
+    }
+    else{
+      for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+          if (
+            board[i][j] &&
+            board[i][j].color === turn
+          ) {
+            [...validMoves, board[i][j].validMoves(board)]
+          }
+        }
+      }
+      if(validMoves.length === 0) return Finished.STALEMATE
+    }
+
+    return Finished.NONE;
+  }
+
+  static isChecked(turn: ChessColor, board: ChessPiece[][]): boolean {
+    let king: ChessPiece = null;
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board[i].length; j++) {
+        if (
+          board[i][j] &&
+          board[i][j].color === turn &&
+          board[i][j] instanceof King
+        ) {
+          king = board[i][j];
+          break;
+        }
+      }
+    }
+
+    if (king === null) throw Error("King is missing");
+
+    const opposingColor =
+      turn === ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
+
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board[i].length; j++) {
+        if (
+          board[i][j] &&
+          board[i][j].color === opposingColor &&
+          !(board[i][j] instanceof King) &&
+          board[i][j]
+            .protectMoves(board)
+            .filter(
+              (validMove) =>
+                validMove.row === king.row && validMove.column === king.column
+            ).length > 0
+        )
+          return true;
+      }
+    }
+    return false;
+  }
+
+  static filterValidMovesChecked(piece: ChessPiece, board: ChessPiece[][]) {
+    let king: ChessPiece = null;
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board[i].length; j++) {
+        if (
+          board[i][j] &&
+          board[i][j].color === piece.color &&
+          board[i][j] instanceof King
+        ) {
+          king = board[i][j];
+          break;
+        }
+      }
+    }
+
+    if (king === null) throw Error("King is missing");
+    const validMoves = piece.validMoves(board);
+    const initialPosition = {
+      row: piece.row,
+      column: piece.column,
+    } as RowColumn;
+    const opposingColor =
+      piece.color === ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
+
+    return validMoves.filter((validMove) => {
+      const temp = board[validMove.row][validMove.column];
+      board = piece.testMove(validMove, board);
+      for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+          if (
+            board[i][j] &&
+            board[i][j].color === opposingColor &&
+            !(board[i][j] instanceof King) &&
+            board[i][j]
+              .protectMoves(board)
+              .filter(
+                (validMove) =>
+                  validMove.row === king.row && validMove.column === king.column
+              ).length > 0
+          ) {
+            board = piece.testMove(initialPosition, board);
+            if (temp) board[validMove.row][validMove.column] = temp;
+            return false;
+          }
+        }
+      }
+      board = piece.testMove(initialPosition, board);
+      if (temp) board[validMove.row][validMove.column] = temp;
+      return true;
+    });
+  }
+
+  static isProtected(
+    position: RowColumn,
+    chessBoard: ChessPiece[][],
+    opposingColor: ChessColor
+  ): boolean {
+    const boardCopy = [...chessBoard];
+    const chessPiece = chessBoard[position.row][position.column];
+    if (chessPiece) {
+      if (chessPiece.color !== opposingColor) return false;
+      chessPiece.color =
+        chessPiece.color === ChessColor.WHITE
+          ? ChessColor.BLACK
+          : ChessColor.WHITE;
+      //TODO: Check if it works without
+      boardCopy[position.row][position.column] = chessPiece;
+    }
+
+    for (let i = 0; i < boardCopy.length; i++) {
+      for (let j = 0; j < boardCopy[i].length; j++) {
+        if (
+          boardCopy[i][j] &&
+          boardCopy[i][j].color === opposingColor &&
+          boardCopy[i][j]
+            .protectMoves(boardCopy)
+            .filter(
+              (validMove) =>
+                validMove.row === position.row &&
+                validMove.column === position.column
+            ).length > 0
+        ) {
+          if (chessPiece)
+            chessPiece.color =
+              chessPiece.color === ChessColor.WHITE
+                ? ChessColor.BLACK
+                : ChessColor.WHITE;
+          return true;
+        }
+      }
+    }
+    if (chessPiece)
+      chessPiece.color =
+        chessPiece.color === ChessColor.WHITE
+          ? ChessColor.BLACK
+          : ChessColor.WHITE;
     return false;
   }
 
