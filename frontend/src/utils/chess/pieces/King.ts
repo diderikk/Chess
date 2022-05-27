@@ -4,7 +4,6 @@ import WhiteImage from "../../../assets/pieces/king_white.png";
 import ChessColor from "../../../enums/ChessColor.enum";
 import type RowColumn from "../../../types/RowColumn.type";
 import ChessBoard from "../ChessBoard";
-import Rook from "./Rook";
 
 export default class King extends ChessPiece {
   image: any;
@@ -239,7 +238,6 @@ export default class King extends ChessPiece {
       !board[this.row][this.column + 1] &&
       !board[this.row][this.column + 2] &&
       board[this.row][this.column + 3] &&
-      board[this.row][this.column + 3] instanceof Rook &&
       board[this.row][this.column + 3].moved === 0 &&
       !ChessBoard.isProtected(
         { row: this.row, column: this.column + 1 },
@@ -263,7 +261,6 @@ export default class King extends ChessPiece {
       !board[this.row][this.column - 2] &&
       !board[this.row][this.column - 3] &&
       board[this.row][this.column - 4] &&
-      board[this.row][this.column - 4] instanceof Rook &&
       board[this.row][this.column - 4].moved === 0 &&
       !ChessBoard.isProtected(
         { row: this.row, column: this.column - 1 },

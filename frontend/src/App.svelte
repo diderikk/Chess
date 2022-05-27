@@ -1,18 +1,21 @@
 <script lang="ts">
-	import ChessBoard from "./components/Board.svelte";
+  import { Router, Route } from "svelte-navigator";
+  import Board from "./components/Board.svelte";
+import Home from "./views/Home.svelte";
 </script>
 
-<main>
-	<ChessBoard />
-</main>
+<Router>
+  <div>
+    <Route path="/" component={Home} />
+  </div>
+</Router>
 
 <style>
-	main {
-		height: 100%;
-		width: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-	
+  div {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 </style>
