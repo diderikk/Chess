@@ -17,18 +17,32 @@ defmodule OTP.Workers.Cache do
     GenServer.call(__MODULE__, {:read, id})
   end
 
-  @spec create_memory(list()) :: any
-  def create_memory(data) do
+  @spec create_memory(tuple()) :: any
+  def create_memory(data) when is_tuple(data) do
     GenServer.call(__MODULE__, {:create, data})
   end
 
-  @spec update_memory(binary(), list()) :: :ok
-  def update_memory(id, data) do
+  def create_memory(_data) do
+    :error
+  end
+
+
+  @spec update_memory(binary(), tuple()) :: :ok
+  def update_memory(id, data) when is_binary(id) and is_tuple(data) do
     GenServer.cast(__MODULE__, {:update, id, data})
   end
 
-  def delete_memory(id) do
+  def update_memory(_id, _data) do
+    :error
+  end
+
+  @spec delete_memory(binary) :: :ok
+  def delete_memory(id) when is_binary(id) do
     GenServer.cast(__MODULE__, {:delete, id})
+  end
+
+  def delete_memory(_id) do
+    :error
   end
   # GenServer Implementation
 
@@ -43,12 +57,12 @@ defmodule OTP.Workers.Cache do
     if Map.has_key?(memory, id) do
       {:reply, Map.get(memory, id), state}
     else
-      {:stop, "No key stored with given ID", state}
+      {:reply, {}, state}
     end
   end
 
   @impl true
-  def handle_call({:create, data}, _from, {stash_pid, memory}) when is_list(data) do
+  def handle_call({:create, data}, _from, {stash_pid, memory}) when is_tuple(data) do
     id = create_uuid(memory)
     memory = Map.put(memory, id, data)
     {:reply, id, {stash_pid, memory}}
@@ -60,7 +74,7 @@ defmodule OTP.Workers.Cache do
   end
 
   @impl true
-  def handle_cast({:update, id, new_data}, {stash_pid, memory}) when is_list(new_data) do
+  def handle_cast({:update, id, new_data}, {stash_pid, memory}) when is_tuple(new_data) do
     if Map.has_key?(memory, id) do
       memory = Map.put(memory, id, new_data)
       {:noreply, {stash_pid, memory}}

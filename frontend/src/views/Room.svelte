@@ -1,13 +1,11 @@
 <script lang="ts">
+import type { Channel, Socket } from "phoenix";
+
   import Board from "../components/Board.svelte";
 
-  import { Socket } from "phoenix";
-  import { onMount } from "svelte";
-  let socket: Socket = null;
-  onMount(() => {
-    socket = new Socket("ws://localhost:4000/socket");
-    socket.connect({ user_id: "anonymous" });
-  });
+  export let socket: Socket = null
+  let lobbyChannel: Channel = null;
+  
 </script>
 
 <div>

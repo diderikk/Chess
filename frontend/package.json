@@ -5,16 +5,18 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "start": "sirv public --no-clear",
+    "start": "sirv public --single --no-clear",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
+    "@bulatdashiev/svelte-slider": "^1.0.3",
     "@rollup/plugin-alias": "^3.1.9",
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-image": "^2.1.1",
     "@rollup/plugin-node-resolve": "^11.0.0",
     "@rollup/plugin-typescript": "^8.0.0",
     "@tsconfig/svelte": "^3.0.0",
+    "@types/": "bulatdashiev/svelte-slider",
     "@types/phoenix": "^1.5.4",
     "rollup": "^2.3.4",
     "rollup-plugin-css-only": "^3.1.0",
@@ -23,7 +25,9 @@
     "rollup-plugin-terser": "^7.0.0",
     "svelte": "^3.0.0",
     "svelte-check": "^2.0.0",
+    "svelte-loading-spinners": "^0.1.7",
     "svelte-preprocess": "^4.0.0",
+    "svelte-range-slider-pips": "^2.0.3",
     "tslib": "^2.0.0",
     "typescript": "^4.0.0"
   },

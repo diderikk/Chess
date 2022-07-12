@@ -1,5 +1,5 @@
 enum ChessColor {
-	WHITE, BLACK
+	WHITE, BLACK, RANDOM
 }
 
 export default ChessColor;

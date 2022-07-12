@@ -16,6 +16,7 @@ defmodule Backend.Application do
       {Phoenix.PubSub, name: Backend.PubSub},
       # Start the Endpoint (http/https)
       BackendWeb.Endpoint,
+      BackendWeb.Presence,
       # Start a worker by calling: Backend.Worker.start_link(arg)
       # {Backend.Worker, arg}
       OTP.Supervisors.ServerSupervisor

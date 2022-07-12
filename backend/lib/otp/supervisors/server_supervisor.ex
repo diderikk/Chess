@@ -3,6 +3,7 @@ defmodule OTP.Supervisors.ServerSupervisor do
 
   alias OTP.Supervisors.CacheSupervisor
   alias OTP.Workers.Stash
+  alias OTP.Workers.Queue
 
   @spec start_link() :: {:ok, pid}
   def start_link() do
@@ -16,7 +17,7 @@ defmodule OTP.Supervisors.ServerSupervisor do
 
   @impl true
   def init(_init_arg) do
-    Supervisor.init([], strategy: :one_for_one)
+    Supervisor.init([{Queue, []}], strategy: :one_for_one)
   end
 
   def child_spec(_init_arg) do

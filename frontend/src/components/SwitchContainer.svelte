@@ -1,10 +1,13 @@
 <script lang="ts">
-  let selected: number = 0;
+  import { createEventDispatcher } from "svelte";
+
+  const dispatch = createEventDispatcher();
+  export let selected: number = 0;
   let hoverOver: number = -1;
   const switchItems: string[] = ["Pairing", "Lobby"];
 
   function select(index: number) {
-    selected = index;
+    dispatch("select", index);
   }
 
   function hover(index: number) {
@@ -39,7 +42,9 @@
       </div>
     {/each}
   </div>
-  <slot />
+  <div id="child-container">
+    <slot />
+  </div>
 </div>
 
 <style>
@@ -47,11 +52,17 @@
     height: 75vh;
     width: 75vh;
   }
+  #child-container{
+    height: 100%;
+    width: 100%;
+    background-color: lightgray;
+    border-radius: 7px;
+  }
   #switch {
     width: 100%;
     height: 5vh;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
   }
   .switch-item {
     display: flex;
@@ -66,5 +77,9 @@
   }
   h3 {
     margin: 0;
+    
+  }
+  h3:focus {
+    outline: none;
   }
 </style>
