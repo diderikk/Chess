@@ -3,6 +3,7 @@
   import { onDestroy, onMount } from "svelte";
   import { Router, Route } from "svelte-navigator";
   import Home from "./views/Home.svelte";
+import NotFound from "./views/NotFound.svelte";
   import Room from "./views/Room.svelte";
 
   let socket: Socket = null;
@@ -11,24 +12,33 @@
     socket = new Socket("ws://localhost:4000/socket", {
       params: { user_id: "anonymous" },
     });
-    socket.connect();
+    socket.connect()
   });
+
 
   onDestroy(() => {
     socket.disconnect();
   });
 </script>
 
-<Router>
-  <div>
-    <Route path="/">
-      <Home socket={socket}/>
-    </Route>
-    <Route path=":room_id/:id">
-      <Room socket={socket} />
-    </Route>
-  </div>
-</Router>
+{#if socket && socket.isConnected}
+  <Router>
+    <div>
+      <Route path="/" let:navigate>
+        <Home {socket} {navigate} />
+      </Route>
+      <Route path=":room_id/:id" let:navigate let:params>
+        <Room {socket} {navigate} {params} />
+      </Route>
+      <Route path="404" let:navigate>
+        <NotFound {navigate}/>
+      </Route>
+    </div>
+  </Router>
+  {:else}
+  <!-- TODO: Loading animation -->
+  <div />
+{/if}
 
 <style>
   div {

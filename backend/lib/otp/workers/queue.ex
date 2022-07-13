@@ -58,7 +58,7 @@ defmodule OTP.Workers.Queue do
 
   defp setup_and_alert({head_pid, head_color, head_id}, {second_pid, _second_color, second_id}) do
     {head_color, second_color} = select_color_delegation(head_color)
-    room_id = Cache.create_memory({[], head_id, second_id, "WHITE"})
+    room_id = Cache.create_memory({[], {head_id, head_color}, {second_id, second_color}, "WHITE"})
     send(head_pid, {:found_opponent, head_color, room_id})
     send(second_pid, {:found_opponent, second_color, room_id})
     :ok

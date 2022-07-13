@@ -17,8 +17,9 @@ defmodule BackendWeb.UserSocket do
 
   @impl true
   def connect(%{"user_id" => user_id}, socket, connect_info) do
-    IO.inspect connect_info
-    socket = assign(socket, :anonymous, false)
+    socket = socket
+    |> assign(:address, connect_info.peer_data.address)
+    |> assign(:anonymous, false)
     {:ok, assign(socket, :user_id, user_id)}
   end
 
