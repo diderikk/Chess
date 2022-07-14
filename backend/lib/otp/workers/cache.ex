@@ -5,7 +5,7 @@ defmodule OTP.Workers.Cache do
 
   #####
 
-  #External API
+  # External API
 
   @spec start_link(pid()) :: {:ok, pid}
   def start_link(stash_pid) do
@@ -26,7 +26,6 @@ defmodule OTP.Workers.Cache do
     :error
   end
 
-
   @spec update_memory(binary(), tuple()) :: :ok
   def update_memory(id, data) when is_binary(id) and is_tuple(data) do
     GenServer.cast(__MODULE__, {:update, id, data})
@@ -44,6 +43,7 @@ defmodule OTP.Workers.Cache do
   def delete_memory(_id) do
     :error
   end
+
   # GenServer Implementation
 
   @impl true

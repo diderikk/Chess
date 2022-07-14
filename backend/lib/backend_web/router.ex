@@ -38,6 +38,6 @@ defmodule BackendWeb.Router do
   end
 
   defp handle_errors(conn, _) do
-    conn |> put_status(400) |>json(%{error: "Bad Request"}) |> halt()
+    conn |> put_status(400) |> json(%{error: "Bad Request"}) |> halt()
   end
 end

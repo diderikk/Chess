@@ -58,7 +58,12 @@ defmodule OTP.Workers.Queue do
 
   defp setup_and_alert({head_pid, head_color, head_id}, {second_pid, _second_color, second_id}) do
     {head_color, second_color} = select_color_delegation(head_color)
-    room_id = Cache.create_memory({[], {head_id, head_color}, {second_id, second_color}, "WHITE"})
+
+    room_id =
+      Cache.create_memory(
+        {initialize_board(), {head_id, head_color}, {second_id, second_color}, "WHITE"}
+      )
+
     send(head_pid, {:found_opponent, head_color, room_id})
     send(second_pid, {:found_opponent, second_color, room_id})
     :ok
@@ -74,10 +79,11 @@ defmodule OTP.Workers.Queue do
 
   defp select_color_delegation("RANDOM") do
     random = :rand.uniform(2)
+
     if random == 1 do
       {"WHITE", "BLACK"}
     else
-    {"BLACK", "WHITE"}
+      {"BLACK", "WHITE"}
     end
   end
 
@@ -85,4 +91,16 @@ defmodule OTP.Workers.Queue do
     Enum.filter(queue, fn {_pid, _color, id} -> id != filter_id end)
   end
 
+  defp initialize_board() do
+    [
+      ["wR", "wH", "wB", "wQ", "wK", "wB", "wH", "wR"],
+      ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      [nil, nil, nil, nil, nil, nil, nil, nil],
+      ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
+      ["bR", "bH", "bB", "bQ", "bK", "bB", "bH", "bR"]
+    ]
+  end
 end

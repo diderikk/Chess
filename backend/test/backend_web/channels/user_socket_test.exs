@@ -31,9 +31,7 @@ defmodule BackendWeb.UserSocketTest do
       assert socket.assigns.mode == "3:2"
       assert socket.assigns.color == "RANDOM"
     end
-
   end
-
 
   defp connect_socket(_) do
     {:ok, socket} = connect(UserSocket, %{user_id: "1234"})

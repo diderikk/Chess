@@ -7,9 +7,9 @@ defmodule OTP.CacheTest do
     setup [:add_list_to_cache]
 
     test "add list" do
-      id = Cache.create_memory({[1,2,3], "white_id", "black_id", "WHITE"})
+      id = Cache.create_memory({[1, 2, 3], "white_id", "black_id", "WHITE"})
       assert is_binary(id)
-      assert {[1,2,3], "white_id", "black_id", "WHITE"} == Cache.read_memory(id)
+      assert {[1, 2, 3], "white_id", "black_id", "WHITE"} == Cache.read_memory(id)
     end
 
     test "return error when data is number" do
@@ -35,9 +35,8 @@ defmodule OTP.CacheTest do
   end
 
   defp add_list_to_cache(_) do
-    id = Cache.create_memory({[1,2,3], "white_id", "black_id", "WHITE"})
+    id = Cache.create_memory({[1, 2, 3], "white_id", "black_id", "WHITE"})
 
     %{id: id}
   end
-
 end

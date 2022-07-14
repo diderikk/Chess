@@ -9,17 +9,21 @@ defmodule BackendWeb.UserSocket do
 
   @impl true
   def connect(%{"user_id" => "anonymous"}, socket, connect_info) do
-    socket = socket
-    |> assign(:address, connect_info.peer_data.address)
-    |> assign(:anonymous, true)
+    socket =
+      socket
+      |> assign(:address, connect_info.peer_data.address)
+      |> assign(:anonymous, true)
+
     {:ok, assign(socket, :user_id, uuid())}
   end
 
   @impl true
   def connect(%{"user_id" => user_id}, socket, connect_info) do
-    socket = socket
-    |> assign(:address, connect_info.peer_data.address)
-    |> assign(:anonymous, false)
+    socket =
+      socket
+      |> assign(:address, connect_info.peer_data.address)
+      |> assign(:anonymous, false)
+
     {:ok, assign(socket, :user_id, user_id)}
   end
 
@@ -31,7 +35,10 @@ defmodule BackendWeb.UserSocket do
   end
 
   defp uuid() do
-    uuid = Integer.to_string(:rand.uniform(4_294_967_296), 32) <> Integer.to_string(:rand.uniform(4_294_967_296), 32)
+    uuid =
+      Integer.to_string(:rand.uniform(4_294_967_296), 32) <>
+        Integer.to_string(:rand.uniform(4_294_967_296), 32)
+
     uuid
   end
 end
