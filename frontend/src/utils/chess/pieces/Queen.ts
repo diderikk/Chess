@@ -150,4 +150,8 @@ export default class Queen extends ChessPiece {
     }
     return res;
   }
+
+  toSerialized(): String {
+    return this.color === ChessColor.BLACK ? "bQ" : "wQ"
+}
 }

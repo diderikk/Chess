@@ -283,4 +283,8 @@ export default class King extends ChessPiece {
     }
     return res;
   }
+
+  toSerialized(): String {
+    return this.color === ChessColor.BLACK ? "bK" : "wK"
+}
 }

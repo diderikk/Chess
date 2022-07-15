@@ -1,10 +1,12 @@
 import type ChessColor from "../../enums/ChessColor.enum";
+import type PlayerType from "../../enums/PlayerType.enum";
 import type RowColumn from "../../types/RowColumn.type";
 
 export default abstract class ChessPiece {
   column: number;
   row: number;
   color: ChessColor;
+  playerColor: PlayerType;
   moved: number;
   abstract image: any;
 
@@ -49,4 +51,6 @@ export default abstract class ChessPiece {
   toString() {
     return `${this.row}:${this.column} - ${this.color}`;
   }
+
+  abstract toSerialized(): String
 }

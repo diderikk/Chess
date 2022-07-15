@@ -87,4 +87,8 @@ export default class Rook extends ChessPiece {
     }
     return res;
   }
+
+  toSerialized(): String {
+    return this.color === ChessColor.BLACK ? "bR" : "wR"
+}
 }

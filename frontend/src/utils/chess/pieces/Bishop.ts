@@ -92,4 +92,8 @@ export default class Bishop extends ChessPiece {
 
     return res;
   }
+
+  toSerialized(): String {
+      return this.color === ChessColor.BLACK ? "bB" : "wB"
+  }
 }

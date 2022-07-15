@@ -4,41 +4,68 @@
   import type { NavigateFn } from "svelte-navigator";
   import type RouteParams from "svelte-navigator/types/RouteParam";
   import Board from "../components/Board.svelte";
-  import RoomStatus from "../enums/RoomStatus.enum";
+  import PlayerType, { valueOf } from "../enums/PlayerType.enum";
+  import type MoveResponse from "../types/MoveResponse.type";
+  import type RoomResponse from "../types/RoomResponse.type";
+  import ChessBoard from "../utils/chess/ChessBoard";
+  import type ChessPiece from "../utils/chess/ChessPiece";
 
   export let params: RouteParams = null;
   export let navigate: NavigateFn = null;
   export let socket: Socket = null;
   let roomChannel: Channel = null;
-  let roomStatus: RoomStatus = RoomStatus.LOADING;
-  console.log(roomStatus);
+  let isLoading: boolean = true;
+  let playerType: PlayerType = PlayerType.SPECTATOR;
+  let chessBoard: ChessPiece[][] = null;
+  let hasSent: boolean = false;
+  let nextTurn: PlayerType = null;
+
   onMount(async () => {
-    if(roomStatus != RoomStatus.NOT_FOUND)
-      await handleJoinLobby();
+    await handleJoinLobby();
   });
 
   async function handleJoinLobby() {
-    roomChannel = socket.channel(`room:${params.room_id}`);
+    // TODO: Store in localstorage
+    roomChannel = socket.channel(`room:${params.roomId}`, {
+      userId: params.id,
+    });
 
     roomChannel
       .join()
-      .receive("ok", (resp) => {
+      .receive("ok", (resp: RoomResponse) => {
         console.log("Joined", resp);
-        roomStatus = RoomStatus.FOUND;
+        playerType = valueOf(resp.color);
+        chessBoard = ChessBoard.deserializeBoard(resp.board, playerType);
+        nextTurn = valueOf(resp.nextTurn);
+        isLoading = false;
       })
       .receive("error", (resp) => {
         console.log(resp);
-        roomChannel.leave()
-        navigate("/404")
+        roomChannel.leave();
+        navigate("/404");
       });
+    roomChannel.on("move", (resp: MoveResponse) => {
+      if (hasSent) {
+        hasSent = false;
+        nextTurn = valueOf(resp.nextTurn)
+        return;
+      }
+      nextTurn = valueOf(resp.nextTurn);
+      chessBoard = ChessBoard.deserializeBoard(resp.board, playerType);
+    });
+  }
+
+  function handleMove(e: CustomEvent<String[][]>) {
+    roomChannel.push("move", { board: e.detail });
+    hasSent = true;
   }
 </script>
 
-{#if roomStatus == RoomStatus.LOADING}
+{#if isLoading}
   <!-- TODO: Loading animation -->
   <div />
-{:else }
-  <Board />
+{:else}
+  <Board {playerType} {chessBoard} {nextTurn} on:move={handleMove} />
 {/if}
 
 <style>

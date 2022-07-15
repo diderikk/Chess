@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
+import PlayerType from "../enums/PlayerType.enum";
   import type RowColumn from "../types/RowColumn.type";
   import type ChessPiece from "../utils/chess/ChessPiece";
 

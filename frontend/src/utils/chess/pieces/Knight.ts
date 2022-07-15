@@ -79,4 +79,8 @@ export default class Knight extends ChessPiece {
 
     return res;
   }
+
+  toSerialized(): String {
+    return this.color === ChessColor.BLACK ? "bH" : "wH"
+}
 }

@@ -27,7 +27,7 @@ import NotFound from "./views/NotFound.svelte";
       <Route path="/" let:navigate>
         <Home {socket} {navigate} />
       </Route>
-      <Route path=":room_id/:id" let:navigate let:params>
+      <Route path=":roomId/:id" let:navigate let:params>
         <Room {socket} {navigate} {params} />
       </Route>
       <Route path="404" let:navigate>
