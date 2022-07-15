@@ -58,10 +58,10 @@ defmodule OTP.Workers.Queue do
 
   defp setup_and_alert({head_pid, head_color, head_id}, {second_pid, _second_color, second_id}) do
     {head_color, second_color} = select_color_delegation(head_color)
-
+    current_datetime = Timex.now() |> Timex.format!("{ISO:Basic}")
     room_id =
       Cache.create_memory(
-        {initialize_board(), {head_id, head_color}, {second_id, second_color}, "WHITE"}
+        {initialize_board(), {head_id, head_color}, {second_id, second_color}, "WHITE", current_datetime}
       )
 
     send(head_pid, {:found_opponent, head_color, room_id})
