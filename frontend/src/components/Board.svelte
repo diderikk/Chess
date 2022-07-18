@@ -15,25 +15,24 @@
   export let nextTurn: PlayerType = PlayerType.SPECTATOR;
   let validMoves: RowColumn[] = [];
   let selectedPiece: ChessPiece = null;
-  console.log(PlayerType[nextTurn])
+  console.log(PlayerType[nextTurn]);
 
   function handleShowValidMoves(e: CustomEvent<ChessPiece>) {
+    if(selectedPiece === e.detail){
+      validMoves = []
+      selectedPiece = null
+      return;
+    }
     selectedPiece = e.detail;
     const playersPiece =
       e.detail &&
       PlayerType[playerType] === ChessColor[e.detail.color] &&
       nextTurn === playerType;
-    if (
-      e.detail &&
-      ChessBoard.isChecked(e.detail.color, chessBoard) &&
-      playersPiece
-    ) {
+    if (e.detail && playersPiece) {
       validMoves = ChessBoard.filterValidMovesChecked(e.detail, [
         ...chessBoard,
       ]);
-    } else if (e.detail && playersPiece)
-      validMoves = e.detail.validMoves([...chessBoard]);
-    else validMoves = [];
+    } else validMoves = [];
   }
 
   function handleMove(e: CustomEvent<RowColumn>) {

@@ -2,6 +2,7 @@ defmodule OTP.Workers.Queue do
   use GenServer
 
   alias OTP.Workers.Cache
+  alias Helper.Room
 
   # External API
 
@@ -37,32 +38,40 @@ defmodule OTP.Workers.Queue do
 
   @impl true
   def handle_cast({:push, mode, channel_pid, color, id}, {queues}) do
-    queue = add_or_alert(channel_pid, color, Map.get(queues, mode), id)
+    queue = add_or_alert(mode, channel_pid, color, Map.get(queues, mode), id)
     queues = Map.put(queues, mode, queue)
     {:noreply, {queues}}
   end
 
-  defp add_or_alert(channel_pid, color, nil, id) do
+  defp add_or_alert(_mode, channel_pid, color, nil, id) do
     [{channel_pid, color, id}]
   end
 
-  defp add_or_alert(channel_pid, color, [], id) do
+  defp add_or_alert(_mode, channel_pid, color, [], id) do
     [{channel_pid, color, id}]
   end
 
-  defp add_or_alert(channel_pid, color, queue, id) do
+  defp add_or_alert(mode, channel_pid, color, queue, id) do
     [head | tail] = queue
-    setup_and_alert(head, {channel_pid, color, id})
+    setup_and_alert(mode, head, {channel_pid, color, id})
     tail
   end
 
-  defp setup_and_alert({head_pid, head_color, head_id}, {second_pid, _second_color, second_id}) do
+  defp setup_and_alert(mode, {head_pid, head_color, head_id}, {second_pid, _second_color, second_id}) do
     {head_color, second_color} = select_color_delegation(head_color)
-    current_datetime = Timex.now() |> Timex.format!("{ISO:Basic}")
+    [minutes, _incr] = Room.split_mode(mode)
     room_id =
-      Cache.create_memory(
-        {initialize_board(), {head_id, head_color}, {second_id, second_color}, "WHITE", current_datetime}
-      )
+      if(head_color == "WHITE") do
+        Cache.create_memory(
+          {initialize_board(), mode, {head_id, head_color, 60*minutes}, {second_id, second_color, 60*minutes},
+           "WHITE", ""}
+        )
+      else
+        Cache.create_memory(
+          {initialize_board(), mode, {second_id, second_color, 180}, {head_id, head_color, 180},
+           "WHITE", ""}
+        )
+      end
 
     send(head_pid, {:found_opponent, head_color, room_id})
     send(second_pid, {:found_opponent, second_color, room_id})

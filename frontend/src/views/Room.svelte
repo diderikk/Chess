@@ -1,9 +1,10 @@
 <script lang="ts">
   import type { Channel, Socket } from "phoenix";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import type { NavigateFn } from "svelte-navigator";
   import type RouteParams from "svelte-navigator/types/RouteParam";
   import Board from "../components/Board.svelte";
+  import Clock from "../components/Clock.svelte";
   import PlayerType, { valueOf } from "../enums/PlayerType.enum";
   import type MoveResponse from "../types/MoveResponse.type";
   import type RoomResponse from "../types/RoomResponse.type";
@@ -19,9 +20,17 @@
   let chessBoard: ChessPiece[][] = null;
   let hasSent: boolean = false;
   let nextTurn: PlayerType = null;
-
+  let playerTime: number = 0;
+  let opponentTime: number = 0;
+  let moveCounter: number = 0;
   onMount(async () => {
     await handleJoinLobby();
+  });
+
+  onDestroy(() => {
+    roomChannel.leave().receive("ok", () => {
+      roomChannel = null;
+    });
   });
 
   async function handleJoinLobby() {
@@ -37,6 +46,13 @@
         playerType = valueOf(resp.color);
         chessBoard = ChessBoard.deserializeBoard(resp.board, playerType);
         nextTurn = valueOf(resp.nextTurn);
+        if (playerType === PlayerType.WHITE) {
+          playerTime = resp.whiteTime;
+          opponentTime = resp.blackTime;
+        } else {
+          playerTime = resp.blackTime;
+          opponentTime = resp.whiteTime;
+        }
         isLoading = false;
       })
       .receive("error", (resp) => {
@@ -44,14 +60,16 @@
         roomChannel.leave();
         navigate("/404");
       });
+
     roomChannel.on("move", (resp: MoveResponse) => {
+      if (moveCounter === 0) tickTime();
       if (hasSent) {
         hasSent = false;
-        nextTurn = valueOf(resp.nextTurn)
-        return;
+      } else {
+        chessBoard = ChessBoard.deserializeBoard(resp.board, playerType);
       }
       nextTurn = valueOf(resp.nextTurn);
-      chessBoard = ChessBoard.deserializeBoard(resp.board, playerType);
+      moveCounter++;
     });
   }
 
@@ -59,21 +77,33 @@
     roomChannel.push("move", { board: e.detail });
     hasSent = true;
   }
+
+  function tickTime() {}
 </script>
 
 {#if isLoading}
   <!-- TODO: Loading animation -->
-  <div />
+  <div id="loader" />
 {:else}
+  <div id="invisible" />
   <Board {playerType} {chessBoard} {nextTurn} on:move={handleMove} />
+  <Clock {playerTime} {opponentTime} />
 {/if}
 
 <style>
-  div {
-    height: 100%;
-    width: 100%;
+  #invisible {
+    height: 200px;
+    width: 500px;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: red;
+  }
+  #loader {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>
