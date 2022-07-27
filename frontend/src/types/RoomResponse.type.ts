@@ -4,7 +4,9 @@ type RoomResponse = {
 	board: String[][],
 	nextTurn: String,
 	whiteTime: number,
-	blackTime: number
+	blackTime: number,
+	movePlayed: boolean,
+	increment: number
 }
 
 export default RoomResponse;

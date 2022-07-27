@@ -3,14 +3,14 @@ defmodule Helper.Room do
 
   def fetchFromCache(room_id, user_id) do
     case Cache.read_memory(room_id) do
-      {board, _mode, {^user_id, color, time}, {_, _, opp_time}, turn, last} ->
-        {color, board, turn, time, opp_time, last}
+      {board, mode, {^user_id, color, time}, {_, _, opp_time}, turn, last} ->
+        {color, board, mode, turn, time, opp_time, last, last != ""}
 
-      {board, _mode, {_, _, opp_time}, {^user_id, color, time}, turn, last} ->
-        {color, board, turn, opp_time, time, last}
+      {board, mode, {_, _, opp_time}, {^user_id, color, time}, turn, last} ->
+        {color, board, mode, turn, opp_time, time, last, last != ""}
 
-      {board, _mode, {_, _, w_time}, {_, _, b_time}, turn, last} ->
-        {"SPECTATOR", board, turn, w_time, b_time, last}
+      {board, mode, {_, _, w_time}, {_, _, b_time}, turn, last} ->
+        {"SPECTATOR", board, mode, turn, w_time, b_time, last, last != ""}
 
       _ ->
         nil
@@ -19,7 +19,7 @@ defmodule Helper.Room do
 
   def validateMove(room_id, user_id, expected_color) do
     case fetchFromCache(room_id, user_id) do
-      {^expected_color, _, _, _, _, _} -> true
+      {^expected_color, _, _, _, _, _, _, _} -> true
       _ -> false
     end
   end
@@ -69,14 +69,31 @@ defmodule Helper.Room do
     nil
   end
 
-  def subtract_time({color, board, "WHITE", white_time, black_time, last_move_time}) do
+  def subtract_time({color, board, mode, "WHITE", white_time, black_time, last_move_time, move_played}) do
     new_white_time = subtract_time(white_time, last_move_time, 0)
-    {color, board, "WHITE", new_white_time, black_time}
+    if(new_white_time < 0) do
+      {color, board, mode, "WHITE", 0, black_time, move_played}
+    else
+      {color, board, mode, "WHITE", new_white_time, black_time, move_played}
+    end
   end
 
-  def subtract_time({color, board, "BLACK", white_time, black_time, last_move_time}) do
+  def subtract_time({color, board, mode, "BLACK", white_time, black_time, last_move_time, move_played}) do
     new_black_time = subtract_time(black_time, last_move_time, 0)
-    {color, board, "BLACK", white_time, new_black_time}
+    if(new_black_time < 0) do
+      {color, board, mode, "BLACK", white_time, 0, move_played}
+    else
+      {color, board, mode, "BLACK", white_time, new_black_time, move_played}
+    end
+  end
+
+  def add_increment(nil) do
+    nil
+  end
+
+  def add_increment({color, board, mode, turn, white_time, new_black_time, move_played}) do
+    [_minutes, increment] = split_mode(mode)
+    {color, board, turn, white_time, new_black_time, move_played, increment}
   end
 
   def split_mode(mode) do

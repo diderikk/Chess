@@ -22,15 +22,14 @@
   let nextTurn: PlayerType = null;
   let playerTime: number = 0;
   let opponentTime: number = 0;
-  let moveCounter: number = 0;
+  let movePlayed: boolean = false;
+  let increment: number = 0;
   onMount(async () => {
     await handleJoinLobby();
   });
 
-  onDestroy(() => {
-    roomChannel.leave().receive("ok", () => {
-      roomChannel = null;
-    });
+  onDestroy(async () => {
+    await leaveRoom()
   });
 
   async function handleJoinLobby() {
@@ -46,30 +45,47 @@
         playerType = valueOf(resp.color);
         chessBoard = ChessBoard.deserializeBoard(resp.board, playerType);
         nextTurn = valueOf(resp.nextTurn);
-        if (playerType === PlayerType.WHITE) {
-          playerTime = resp.whiteTime;
-          opponentTime = resp.blackTime;
-        } else {
+        movePlayed = resp.movePlayed;
+        increment = resp.increment;
+        if (playerType === PlayerType.BLACK) {
           playerTime = resp.blackTime;
           opponentTime = resp.whiteTime;
+        } else {
+          playerTime = resp.whiteTime;
+          opponentTime = resp.blackTime;
+        }
+        if (resp.movePlayed === true) {
+          // addLatency();
+          tickTime();
         }
         isLoading = false;
       })
-      .receive("error", (resp) => {
+      .receive("error", async (resp) => {
         console.log(resp);
-        roomChannel.leave();
+        await leaveRoom()
         navigate("/404");
       });
 
     roomChannel.on("move", (resp: MoveResponse) => {
-      if (moveCounter === 0) tickTime();
       if (hasSent) {
         hasSent = false;
       } else {
         chessBoard = ChessBoard.deserializeBoard(resp.board, playerType);
       }
+      incrementTime()
       nextTurn = valueOf(resp.nextTurn);
-      moveCounter++;
+      if (!movePlayed) tickTime();
+      movePlayed = true;
+    });
+  }
+
+  async function leaveRoom() {
+    return new Promise<void>((res, rej) => {
+      if (!roomChannel) res();
+      roomChannel
+        .leave()
+        .receive("ok", () => res())
+        .receive("error", () => rej());
     });
   }
 
@@ -78,7 +94,32 @@
     hasSent = true;
   }
 
-  function tickTime() {}
+  function tickTime() {
+    if (nextTurn === playerType || playerType === PlayerType.SPECTATOR) {
+      if(playerTime > 0)
+        playerTime -= 1;
+    } else {
+      if(opponentTime > 0)
+        opponentTime -= 1;
+    }
+    setTimeout(() => tickTime(), 1000);
+  }
+
+  function addLatency() {
+    if (nextTurn === playerType || playerType === PlayerType.SPECTATOR) {
+      playerTime -= 1;
+    } else {
+      opponentTime -= 1;
+    }
+  }
+
+  function incrementTime() {
+    if (nextTurn === playerType || playerType === PlayerType.SPECTATOR) {
+      playerTime += increment;
+    } else {
+      opponentTime += increment;
+    }
+  }
 </script>
 
 {#if isLoading}
@@ -92,12 +133,14 @@
 
 <style>
   #invisible {
-    height: 200px;
-    width: 500px;
+    height: 25vh;
+    width: 15%;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: red;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 0 10px;
+    padding: 10px 30px;
   }
   #loader {
     height: 100%;

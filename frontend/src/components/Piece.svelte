@@ -11,17 +11,25 @@ import PlayerType from "../enums/PlayerType.enum";
   export let column: number = 0;
   export let validMove: boolean = false;
   export let isChecked: boolean = false;
+  export let playerType: PlayerType = PlayerType.SPECTATOR
 
   function handleClick() {
     if (validMove)
       dispatch("move", { row, column } as RowColumn);
     else dispatch("showValidMoves", piece);
   }
+
+  function classSelector() {
+    if(playerType === PlayerType.BLACK)
+      return (row+column) % 2 === 1 ? "even" : "odd"
+    else
+      return (row+column) % 2 === 0 ? "even" : "odd"
+  }
 </script>
 
 <div
   id="container"
-  class={(row+column) % 2 === 0 ? "even" : "odd"}
+  class={classSelector()}
   on:click={handleClick}
 >
   {#if piece}

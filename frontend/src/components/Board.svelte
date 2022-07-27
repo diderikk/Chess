@@ -18,9 +18,9 @@
   console.log(PlayerType[nextTurn]);
 
   function handleShowValidMoves(e: CustomEvent<ChessPiece>) {
-    if(selectedPiece === e.detail){
-      validMoves = []
-      selectedPiece = null
+    if (selectedPiece === e.detail) {
+      validMoves = [];
+      selectedPiece = null;
       return;
     }
     selectedPiece = e.detail;
@@ -62,6 +62,7 @@
           (rowCol) => rowCol.row === rowIndex && rowCol.column === columnIndex
         ).length > 0}
         isChecked={isChecked(column)}
+        {playerType}
         on:showValidMoves={handleShowValidMoves}
         on:move={handleMove}
       />

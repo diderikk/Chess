@@ -13,18 +13,20 @@ defmodule BackendWeb.RoomChannel do
       |> assign(:user_id, user_unique_id)
       |> assign(:room_id, room_id)
 
-    case Room.fetchFromCache(room_id, user_unique_id) |> Room.subtract_time() do
+    case Room.fetchFromCache(room_id, user_unique_id) |> Room.subtract_time() |> Room.add_increment() do
       nil ->
         {:error, %{reason: "Room not found"}}
 
-      {color, board, turn, white_time, black_time} ->
+      {color, board, turn, white_time, black_time, move_played, increment} ->
         {:ok,
          %{
            color: color,
            board: board,
            nextTurn: turn,
            whiteTime: white_time,
-           blackTime: black_time
+           blackTime: black_time,
+           movePlayed: move_played,
+           increment: increment
          }, socket}
     end
   end

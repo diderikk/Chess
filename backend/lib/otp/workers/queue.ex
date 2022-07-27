@@ -68,7 +68,7 @@ defmodule OTP.Workers.Queue do
         )
       else
         Cache.create_memory(
-          {initialize_board(), mode, {second_id, second_color, 180}, {head_id, head_color, 180},
+          {initialize_board(), mode, {second_id, second_color, 60*minutes}, {head_id, head_color, 60*minutes},
            "WHITE", ""}
         )
       end
