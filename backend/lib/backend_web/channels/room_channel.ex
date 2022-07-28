@@ -45,4 +45,14 @@ defmodule BackendWeb.RoomChannel do
     end
   end
 
+  def handle_in("expired", _payload, socket) do
+    winner = Room.validateExpired(socket.assigns.room_id, socket.assigns.user_id)
+    if(winner == nil) do
+      {:reply, :error, socket}
+    else
+      broadcast!(socket, "finished", %{winner: winner})
+      {:reply, :ok, socket}
+    end
+  end
+
 end

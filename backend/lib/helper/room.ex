@@ -17,6 +17,15 @@ defmodule Helper.Room do
     end
   end
 
+  def validateExpired(room_id, user_id) do
+    case fetchFromCache(room_id, user_id) |> subtract_time() do
+      {_color, _board, _mode, "WHITE", 0, _black_time, _move_played} -> "BLACK"
+      {_color, _board, _mode, "BLACK", _white_time, 0, _move_played} -> "WHITE"
+      _ -> nil
+    end
+
+  end
+
   def validateMove(room_id, user_id, expected_color) do
     case fetchFromCache(room_id, user_id) do
       {^expected_color, _, _, _, _, _, _, _} -> true
