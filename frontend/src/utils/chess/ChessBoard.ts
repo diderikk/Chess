@@ -12,14 +12,14 @@ import Rook from "./pieces/Rook";
 
 export default class ChessBoard {
   static isFinished(turn: ChessColor, board: ChessPiece[][]): Finished {
-    const validMoves: RowColumn[] = [];
+    let validMoves: RowColumn[] = [];
     if (this.isChecked(turn, board)) {
       for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
           if (board[i][j] && board[i][j].color === turn) {
-            [
+            validMoves = [
               ...validMoves,
-              ChessBoard.filterValidMovesChecked(board[i][j], board),
+              ...ChessBoard.filterValidMovesChecked(board[i][j], board),
             ];
           }
         }
@@ -29,7 +29,7 @@ export default class ChessBoard {
       for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
           if (board[i][j] && board[i][j].color === turn) {
-            [...validMoves, board[i][j].validMoves(board)];
+            validMoves = [...validMoves, ...board[i][j].validMoves(board)];
           }
         }
       }

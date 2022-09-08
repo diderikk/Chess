@@ -1,7 +1,5 @@
-import type PlayerType from "../enums/PlayerType.enum"
-
 type FinishResponse = {
-	winner: PlayerType
+	winner: string
 }
 
 export default FinishResponse;

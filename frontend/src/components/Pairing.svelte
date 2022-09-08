@@ -1,11 +1,12 @@
 <script lang="ts">
   import type MinuteIncrement from "../types/MinuteIncrement.type";
   import { Pulse } from "svelte-loading-spinners";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onDestroy } from "svelte";
   import { fade } from "svelte/transition";
   import LobbyModal from "./LobbyModal.svelte";
   import ChessColor from "../enums/ChessColor.enum";
-  import type Lobby from "../types/Lobby.type";
+  import type LobbyEvent from "../types/LobbyEvent.type";
+  import { modeIndex } from "../stores/mode";
 
   const dispatch = createEventDispatcher();
   const defaultMinuteIncrements: MinuteIncrement[] = [
@@ -22,8 +23,14 @@
     { minutes: 30, increment: 20 },
   ];
 
-  let clicked = -1;
+  let modeSelected: number = -1;
   let openCustomModal: boolean = false;
+
+  const modeUnsub = modeIndex.subscribe((val) => {
+    modeSelected = val;
+  });
+
+  onDestroy(modeUnsub);
 
   function getTimeControlMode(timeControl: MinuteIncrement): string {
     if (timeControl.minutes < 3) return "Bullet";
@@ -34,23 +41,21 @@
   }
 
   function handleModeClick(mode: MinuteIncrement, index: number) {
-    if (clicked !== index){ 
-      clicked = index;
-      dispatch("joinLobby", { mode, color: ChessColor.RANDOM });
-    }
-    else if (clicked === index) {
-      clicked = -1;
+    if (modeSelected !== index) {
+      modeIndex.set(index);
+      dispatch("joinLobby", { mode: `${mode.minutes}:${mode.increment}`, color: ChessColor.RANDOM } as LobbyEvent);
+    } else if (modeSelected === index) {
+      modeIndex.set(-1);
       dispatch("leaveLobby");
     }
   }
 
   function handleCustomClick() {
-    if (clicked !== 11){ 
+    if (modeSelected !== 11) {
       dispatch("leaveLobby");
-      openCustomModal = true
-    }
-    else{
-      clicked = -1;
+      openCustomModal = true;
+    } else {
+      modeIndex.set(-1);
       dispatch("leaveLobby");
     }
   }
@@ -59,24 +64,24 @@
     openCustomModal = false;
   }
 
-  function handleModal(e: CustomEvent<Lobby>) {
-    clicked = 11;
+  function handleModal(e: CustomEvent<LobbyEvent>) {
+    modeIndex.set(11);
     openCustomModal = false;
-    dispatch("joinLobby", e.detail);
+    dispatch("joinLobby", e.detail as LobbyEvent);
   }
 
-  function focus(element: any){
-    element.focus()
+  function focus(element: any) {
+    element.focus();
   }
 </script>
 
 <div class="container" use:focus>
   {#each defaultMinuteIncrements as minuteIncrement, index}
     <div
-      class={index === clicked ? "time-control-clicked" : "time-control"}
+      class={index === modeSelected ? "time-control-clicked" : "time-control"}
       on:click={() => handleModeClick(minuteIncrement, index)}
     >
-      {#if index === clicked}
+      {#if index === modeSelected}
         <div in:fade={{ delay: 100 }}>
           <Pulse size="50" color="orange" unit="px" />
         </div>
@@ -91,10 +96,10 @@
     </div>
   {/each}
   <div
-    class={clicked === 11 ? "time-control-clicked" : "time-control"}
+    class={modeSelected === 11 ? "time-control-clicked" : "time-control"}
     on:click={handleCustomClick}
   >
-    {#if clicked === 11}
+    {#if modeSelected === 11}
       <div in:fade={{ delay: 100 }}>
         <Pulse size="50" color="orange" unit="px" />
       </div>

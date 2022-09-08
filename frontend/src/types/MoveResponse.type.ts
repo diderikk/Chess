@@ -1,6 +1,6 @@
 type MoveResponse = {
-	board: String[][],
-	nextTurn: String
+	board: string[][],
+	nextTurn: string
 }
 
 export default MoveResponse;

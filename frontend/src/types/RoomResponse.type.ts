@@ -1,12 +1,13 @@
+import type RoomStatus from "../enums/RoomStatus.enum";
 
 type RoomResponse = {
-	color: String,
-	board: String[][],
-	nextTurn: String,
+	color: string,
+	board: string[][],
+	nextTurn: string,
 	whiteTime: number,
 	blackTime: number,
-	movePlayed: boolean,
-	increment: number
+	increment: number,
+	status: string
 }
 
 export default RoomResponse;

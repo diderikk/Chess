@@ -17,6 +17,15 @@ defmodule OTP.Workers.Cache do
     GenServer.call(__MODULE__, {:read, id})
   end
 
+  @spec create_memory(binary(), tuple()) :: any
+  def create_memory(id, data) when is_binary(id) and is_tuple(data) do
+    GenServer.call(__MODULE__, {:create, id, data})
+  end
+
+  def create_memory(_id, _data) do
+    :error
+  end
+
   @spec create_memory(tuple()) :: any
   def create_memory(data) when is_tuple(data) do
     GenServer.call(__MODULE__, {:create, data})
@@ -59,6 +68,16 @@ defmodule OTP.Workers.Cache do
     else
       {:reply, {}, state}
     end
+  end
+
+  @impl true
+  def handle_call({:create, id, data}, _from, {stash_pid, memory}) when is_binary(id) and is_tuple(data) do
+    memory = Map.put(memory, id, data)
+    {:reply, id, {stash_pid, memory}}
+  end
+
+  def handle_call({:create, _id, _data}, _from, state) do
+    {:stop, "Data was not a list", state}
   end
 
   @impl true

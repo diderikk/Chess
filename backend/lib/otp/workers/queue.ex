@@ -11,6 +11,11 @@ defmodule OTP.Workers.Queue do
     GenServer.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
 
+  @spec list :: map()
+  def list() do
+    GenServer.call(__MODULE__, :list)
+  end
+
   @spec push(binary(), pid(), binary(), tuple()) :: :ok
   def push(mode, channel_pid, color, id) do
     GenServer.cast(__MODULE__, {:push, mode, channel_pid, color, id})
@@ -27,6 +32,11 @@ defmodule OTP.Workers.Queue do
   @spec init(any) :: {:ok, {%{}}}
   def init(_init_arg) do
     {:ok, {%{}}}
+  end
+
+  @impl true
+  def handle_call(:list, _from, {queues}) do
+    {:reply, queues, {queues}}
   end
 
   @impl true
@@ -64,12 +74,12 @@ defmodule OTP.Workers.Queue do
       if(head_color == "WHITE") do
         Cache.create_memory(
           {initialize_board(), mode, {head_id, head_color, 60*minutes}, {second_id, second_color, 60*minutes},
-           "WHITE", ""}
+           "WHITE", "", "SETUP"}
         )
       else
         Cache.create_memory(
           {initialize_board(), mode, {second_id, second_color, 60*minutes}, {head_id, head_color, 60*minutes},
-           "WHITE", ""}
+           "WHITE", "", "SETUP"}
         )
       end
 

@@ -19,7 +19,8 @@ defmodule Backend.Application do
       BackendWeb.Presence,
       # Start a worker by calling: Backend.Worker.start_link(arg)
       # {Backend.Worker, arg}
-      OTP.Supervisors.ServerSupervisor
+      OTP.Supervisors.ServerSupervisor,
+      OTP.Workers.Scheduler
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

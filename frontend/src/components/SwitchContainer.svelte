@@ -52,11 +52,12 @@
     height: 75vh;
     width: 75vh;
   }
-  #child-container{
+  #child-container {
     height: 100%;
     width: 100%;
     background-color: lightgray;
     border-radius: 7px;
+    overflow-y: auto;
   }
   #switch {
     width: 100%;
@@ -77,7 +78,6 @@
   }
   h3 {
     margin: 0;
-    
   }
   h3:focus {
     outline: none;

@@ -5,7 +5,7 @@
   import WhiteKing from "../assets/pieces/king_white.png";
   import CombinedKing from "../assets/pieces/king_combined.png";
   import ChessColor from "../enums/ChessColor.enum";
-  import type MinuteIncrement from "../types/MinuteIncrement.type";
+  import type LobbyEvent from "../types/LobbyEvent.type";
 
   const dispatch = createEventDispatcher();
 
@@ -20,11 +20,10 @@
   }
 
   function handleCreateGame(color: ChessColor) {
-    const mode: MinuteIncrement = {
-      minutes: minutes[0],
-      increment: increment[0],
-    };
-    dispatch("joinLobby", { mode, color });
+    dispatch("joinLobby", {
+      mode: `${minutes[0]}:${increment[0]}`,
+      color,
+    } as LobbyEvent);
   }
 </script>
 
@@ -48,10 +47,10 @@
         <img class="icon" src={BlackKing} alt="black king" />
       </div>
       <div class="color" on:click={() => handleCreateGame(ChessColor.RANDOM)}>
-        <img id="combined-icon" src={CombinedKing} alt="black king" />
+        <img id="combined-icon" src={CombinedKing} alt="combined king" />
       </div>
       <div class="color" on:click={() => handleCreateGame(ChessColor.WHITE)}>
-        <img class="icon" src={WhiteKing} alt="black king" />
+        <img class="icon" src={WhiteKing} alt="white king" />
       </div>
     </div>
   </div>
