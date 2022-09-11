@@ -39,8 +39,7 @@ defmodule BackendWeb.RoomChannel do
 
   def handle_info(:after_join, socket) do
     {user_id, _} = socket.assigns.user_id
-    {:ok, _} =
-    Presence.track(socket, user_id, %{})
+    {:ok, _} = Presence.track(socket, user_id, %{})
 
     push(socket, "presence_state", Presence.list(socket))
     {:noreply, socket}
@@ -175,21 +174,30 @@ defmodule BackendWeb.RoomChannel do
       Room.fetch_from_cache(socket.assigns.room_id, socket.assigns.user_id)
 
     opp_color = if color == "WHITE", do: "BLACK", else: "WHITE"
-    opponent_has_timed_out = !(Map.values(Presence.list(socket)) |> Enum.any?(fn
-      {^opp_color, _metas} -> true
-      _ -> false  end))
-    if(opponent_has_timed_out && (status == "PLAYING" || status == "REMIS_REQUEST" || status == "SETUP")) do
-      {event, status} = case status do
-        "PLAYING" -> {"finished", color}
-        "REMIS_REQUEST" -> {"finished", color}
-        "SETUP" -> {"aborted", "ABORTED"}
-      end
+
+    opponent_has_timed_out =
+      !(Map.values(Presence.list(socket))
+        |> Enum.any?(fn
+          {^opp_color, _metas} -> true
+          _ -> false
+        end))
+
+    if(
+      opponent_has_timed_out &&
+        (status == "PLAYING" || status == "REMIS_REQUEST" || status == "SETUP")
+    ) do
+      {event, status} =
+        case status do
+          "PLAYING" -> {"finished", color}
+          "REMIS_REQUEST" -> {"finished", color}
+          "SETUP" -> {"aborted", "ABORTED"}
+        end
+
       Room.update_room_status(socket.assigns.room_id, status)
       broadcast!(socket, event, %{winner: status})
       {:reply, :ok, socket}
     else
       {:reply, :error, socket}
     end
-
   end
 end

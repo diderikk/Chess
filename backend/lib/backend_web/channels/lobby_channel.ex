@@ -32,7 +32,6 @@ defmodule BackendWeb.LobbyChannel do
       Presence.untrack(socket, socket.assigns.user_id)
       {:ok, socket}
     end
-
   end
 
   @spec handle_info({:found_opponent, binary(), binary()}, Phoenix.Socket.t()) ::
@@ -43,8 +42,7 @@ defmodule BackendWeb.LobbyChannel do
   end
 
   def handle_info(:after_join, socket) do
-    {:ok, _} =
-    Presence.track(socket, socket.assigns.user_id, %{})
+    {:ok, _} = Presence.track(socket, socket.assigns.user_id, %{})
 
     broadcast!(socket, "presence_state", Presence.list(socket))
     {:noreply, socket}

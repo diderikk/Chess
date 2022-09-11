@@ -76,7 +76,8 @@ defmodule OTP.Workers.Cache do
   end
 
   @impl true
-  def handle_call({:create, id, data}, _from, {stash_pid, memory}) when is_binary(id) and is_tuple(data) do
+  def handle_call({:create, id, data}, _from, {stash_pid, memory})
+      when is_binary(id) and is_tuple(data) do
     memory = Map.put(memory, id, data)
     {:reply, id, {stash_pid, memory}}
   end
@@ -124,8 +125,11 @@ defmodule OTP.Workers.Cache do
 
   @impl true
   def handle_cast(:clean, {stash_pid, memory}) do
-    IO.inspect memory
-    memory = Map.filter(memory, fn {_key, {_, _, _, _, _, _, status}} -> status == "PLAYING" || status == "REMIS_REQUEST" || status == "SETUP" end)
+    memory =
+      Map.filter(memory, fn {_key, {_, _, _, _, _, _, status}} ->
+        status == "PLAYING" || status == "REMIS_REQUEST" || status == "SETUP"
+      end)
+
     {:noreply, {stash_pid, memory}}
   end
 

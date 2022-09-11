@@ -67,19 +67,24 @@ defmodule OTP.Workers.Queue do
     tail
   end
 
-  defp setup_and_alert(mode, {head_pid, head_color, head_id}, {second_pid, _second_color, second_id}) do
+  defp setup_and_alert(
+         mode,
+         {head_pid, head_color, head_id},
+         {second_pid, _second_color, second_id}
+       ) do
     {head_color, second_color} = select_color_delegation(head_color)
     [minutes, _incr] = Room.split_mode(mode)
+
     room_id =
       if(head_color == "WHITE") do
         Cache.create_memory(
-          {initialize_board(), mode, {head_id, head_color, 60*minutes}, {second_id, second_color, 60*minutes},
-           "WHITE", "", "SETUP"}
+          {initialize_board(), mode, {head_id, head_color, 60 * minutes},
+           {second_id, second_color, 60 * minutes}, "WHITE", "", "SETUP"}
         )
       else
         Cache.create_memory(
-          {initialize_board(), mode, {second_id, second_color, 60*minutes}, {head_id, head_color, 60*minutes},
-           "WHITE", "", "SETUP"}
+          {initialize_board(), mode, {second_id, second_color, 60 * minutes},
+           {head_id, head_color, 60 * minutes}, "WHITE", "", "SETUP"}
         )
       end
 

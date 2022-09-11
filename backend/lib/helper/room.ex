@@ -112,9 +112,7 @@ defmodule Helper.Room do
     nil
   end
 
-  def subtract_time(
-        {color, board, mode, "WHITE", white_time, black_time, last_move_time, status}
-      ) do
+  def subtract_time({color, board, mode, "WHITE", white_time, black_time, last_move_time, status}) do
     new_white_time = subtract_time(white_time, last_move_time, 0)
 
     if(new_white_time < 0) do
@@ -124,9 +122,7 @@ defmodule Helper.Room do
     end
   end
 
-  def subtract_time(
-        {color, board, mode, "BLACK", white_time, black_time, last_move_time, status}
-      ) do
+  def subtract_time({color, board, mode, "BLACK", white_time, black_time, last_move_time, status}) do
     new_black_time = subtract_time(black_time, last_move_time, 0)
 
     if(new_black_time < 0) do
