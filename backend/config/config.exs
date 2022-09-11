@@ -7,6 +7,8 @@
 # General application configuration
 import Config
 
+alias OTP.Workers.Cache
+
 config :backend,
   ecto_repos: [Backend.Repo]
 
@@ -27,7 +29,7 @@ config :phoenix, :json_library, Jason
 
 config :backend, OTP.Workers.Scheduler,
   jobs: [
-    {"* * * * *", fn -> IO.puts "Hello" end}
+    {"* * * * *", fn -> Cache.clean_memory() end}
   ],
   debug_logging: false
 

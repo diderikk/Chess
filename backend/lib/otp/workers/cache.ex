@@ -53,6 +53,11 @@ defmodule OTP.Workers.Cache do
     :error
   end
 
+  @spec clean_memory() :: :ok
+  def clean_memory() do
+    GenServer.cast(__MODULE__, :clean)
+  end
+
   # GenServer Implementation
 
   @impl true
@@ -115,6 +120,13 @@ defmodule OTP.Workers.Cache do
     else
       {:stop, "No key stored with given ID", {stash_pid, memory}}
     end
+  end
+
+  @impl true
+  def handle_cast(:clean, {stash_pid, memory}) do
+    IO.inspect memory
+    memory = Map.filter(memory, fn {_key, {_, _, _, _, _, _, status}} -> status == "PLAYING" || status == "REMIS_REQUEST" || status == "SETUP" end)
+    {:noreply, {stash_pid, memory}}
   end
 
   @impl true
