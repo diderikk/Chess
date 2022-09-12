@@ -3,7 +3,6 @@
   import { Pulse } from "svelte-loading-spinners";
   import { createEventDispatcher, onDestroy } from "svelte";
   import { fade } from "svelte/transition";
-  import LobbyModal from "./LobbyModal.svelte";
   import ChessColor from "../enums/ChessColor.enum";
   import type LobbyEvent from "../types/LobbyEvent.type";
   import { modeIndex } from "../stores/mode";
@@ -53,21 +52,11 @@
   function handleCustomClick() {
     if (modeSelected !== 11) {
       dispatch("leaveLobby");
-      openCustomModal = true;
+      dispatch("openCustomModal")
     } else {
       modeIndex.set(-1);
       dispatch("leaveLobby");
     }
-  }
-
-  function handleCustomModalClose() {
-    openCustomModal = false;
-  }
-
-  function handleModal(e: CustomEvent<LobbyEvent>) {
-    modeIndex.set(11);
-    openCustomModal = false;
-    dispatch("joinLobby", e.detail as LobbyEvent);
   }
 
   function focus(element: any) {
@@ -107,12 +96,6 @@
       <h4 readonly>Custom</h4>
     {/if}
   </div>
-  <LobbyModal
-    title="Create a game"
-    open={openCustomModal}
-    on:closeModal={handleCustomModalClose}
-    on:joinLobby={handleModal}
-  />
 </div>
 
 <style>

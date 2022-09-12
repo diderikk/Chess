@@ -25,7 +25,7 @@ defmodule BackendWeb.Presence do
 
       for {mode, queue} <- queue, into: %{} do
         ids =
-          Enum.map(queue, fn {_pid, color, {user_id, _address}} ->
+          Enum.map(queue, fn {_mode, _pid, color, {user_id, _address}} ->
             %{id: user_id, color: color}
           end)
 

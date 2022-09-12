@@ -11,10 +11,14 @@
   import LobbyTable from "../components/LobbyTable.svelte";
   import { modeIndex } from "../stores/mode";
   import { onDestroy, onMount } from "svelte";
+  import LobbyModal from "../components/LobbyModal.svelte";
+import ClipboxTextInput from "../components/ClipboxTextInput.svelte";
 
   export let navigate: NavigateFn = null;
   export let socket: Socket = null;
   let lobbyChannel: Channel = null;
+  let openCustomModal: boolean = false;
+  let withFriend: boolean = false;
 
   let selected: number = 0;
   let lobbyList: Lobby[] = [];
@@ -23,8 +27,9 @@
     await handleJoinLobby(null);
   });
 
-  onDestroy(() => {
+  onDestroy(async () => {
     modeIndex.set(-1);
+    await leaveLobby()
   });
 
   function handleSelect(e: CustomEvent<number>) {
@@ -39,25 +44,28 @@
 
     if (e) {
       const color = ChessColor[e.detail.color];
-      lobbyChannel = socket.channel(topic, { color, mode: e.detail.mode });
+      if(withFriend)
+        lobbyChannel = socket.channel(topic, { color, mode: e.detail.mode, priv: null });
+      else
+        lobbyChannel = socket.channel(topic, { color, mode: e.detail.mode });
     } else {
       lobbyChannel = socket.channel(topic, {});
     }
 
-    lobbyChannel.join().receive("ok", (resp) => {
+    lobbyChannel.join().receive("ok", (resp: {priv: string}) => {
       console.log("Joined", resp);
     });
     lobbyChannel.on("room", (resp: LobbyResponse) => {
       navigate(`${resp.roomId}/${resp.id}`);
     });
     lobbyChannel.on("presence_state", (resp: LobbyPresenceResponse) => {
-      console.log("HELLO")
-      lobbyList = []
+      console.log(resp)
+      lobbyList = [];
       Object.keys(resp).forEach((mode) => {
         const lobbiesIt = resp[mode].ids.map((id) => {
           return { mode, id: id.id, color: id.color } as Lobby;
         });
-        lobbyList = [...lobbyList, ...lobbiesIt]
+        lobbyList = [...lobbyList, ...lobbiesIt];
       });
     });
   }
@@ -72,24 +80,91 @@
         });
       });
   }
+
+  function handleCustomModalClose() {
+    openCustomModal = false;
+    withFriend = false;
+  }
+
+  function handleModal(e: CustomEvent<LobbyEvent>) {
+    modeIndex.set(11);
+    openCustomModal = false;
+    handleJoinLobby(e);
+  }
+
+  function handleCustomModalOpen(isWithFriend: boolean = false) {
+    openCustomModal = true;
+    withFriend = isWithFriend
+  }
+
+
 </script>
 
-<div>
+<div id="container">
+  <div class="sidebar" />
+
   <SwitchContainer {selected} on:select={handleSelect}>
     {#if selected === 0}
-      <Pairing on:joinLobby={handleJoinLobby} on:leaveLobby={leaveLobby} />
+      <Pairing
+        on:openCustomModal={() => handleCustomModalOpen()}
+        on:joinLobby={handleJoinLobby}
+        on:leaveLobby={() => handleJoinLobby(null)}
+      />
     {:else}
       <LobbyTable on:joinLobby={handleJoinLobby} lobbyTable={lobbyList} />
     {/if}
   </SwitchContainer>
+  <div class="sidebar">
+    <div class="sidebar-button" on:click={() => handleCustomModalOpen()}>
+      <h3>Create A Game</h3>
+    </div>
+    <div class="sidebar-button" on:click={() => handleCustomModalOpen(true)}><h3>Play With A Friend</h3></div>
+    <ClipboxTextInput text="diderik.com" />
+  </div>
+  <LobbyModal
+    title="Create a game"
+    open={openCustomModal}
+    on:closeModal={handleCustomModalClose}
+    on:joinLobby={handleModal}
+  />
 </div>
 
 <style>
-  div {
+  .sidebar-button {
+    width: 100%;
+    height: 15%;
+    background-color: darkgray;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 7px;
+    /* border: 1px solid lightgray; */
+    opacity: 0.8;
+    cursor: pointer;
+  }
+  .sidebar-button:hover {
+    opacity: 0.7;
+    background-color: green;
+  }
+  .sidebar {
+    width: 300px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+  h3 {
+    margin: 10px;
+    user-select: none;
+  }
+  #container {
     height: 100%;
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
   }
 </style>

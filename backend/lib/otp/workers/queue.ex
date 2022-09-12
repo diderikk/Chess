@@ -16,9 +16,9 @@ defmodule OTP.Workers.Queue do
     GenServer.call(__MODULE__, :list)
   end
 
-  @spec push(binary(), pid(), binary(), tuple()) :: :ok
-  def push(mode, channel_pid, color, id) do
-    GenServer.cast(__MODULE__, {:push, mode, channel_pid, color, id})
+  @spec push(binary(), pid(), binary(), tuple(), binary() | nil) :: :ok
+  def push(mode, channel_pid, color, id, priv) do
+    GenServer.cast(__MODULE__, {:push, mode, channel_pid, color, id, priv})
   end
 
   @spec pop(binary(), tuple()) :: :ok
@@ -36,6 +36,7 @@ defmodule OTP.Workers.Queue do
 
   @impl true
   def handle_call(:list, _from, {queues}) do
+    # return_queues = Map.filter(queues, fn {key, _val} -> String.length(key) < 6 end)
     {:reply, queues, {queues}}
   end
 
@@ -47,30 +48,36 @@ defmodule OTP.Workers.Queue do
   end
 
   @impl true
-  def handle_cast({:push, mode, channel_pid, color, id}, {queues}) do
+  def handle_cast({:push, mode, channel_pid, color, id, nil}, {queues}) do
     queue = add_or_alert(mode, channel_pid, color, Map.get(queues, mode), id)
     queues = Map.put(queues, mode, queue)
     {:noreply, {queues}}
   end
 
-  defp add_or_alert(_mode, channel_pid, color, nil, id) do
-    [{channel_pid, color, id}]
+  @impl true
+  def handle_cast({:push, mode, channel_pid, color, id, lobby_id}, {queues}) do
+    queue = add_or_alert(mode, channel_pid, color, Map.get(queues, lobby_id), id)
+    queues = Map.put(queues, lobby_id, queue)
+    {:noreply, {queues}}
   end
 
-  defp add_or_alert(_mode, channel_pid, color, [], id) do
-    [{channel_pid, color, id}]
+  defp add_or_alert(mode, channel_pid, color, nil, id) do
+    [{mode, channel_pid, color, id}]
   end
 
-  defp add_or_alert(mode, channel_pid, color, queue, id) do
-    [head | tail] = queue
-    setup_and_alert(mode, head, {channel_pid, color, id})
+  defp add_or_alert(mode, channel_pid, color, [], id) do
+    [{mode, channel_pid, color, id}]
+  end
+
+  defp add_or_alert(mode, channel_pid, color, [head | tail], id) do
+    setup_and_alert(mode, head, {mode, channel_pid, color, id})
     tail
   end
 
   defp setup_and_alert(
          mode,
-         {head_pid, head_color, head_id},
-         {second_pid, _second_color, second_id}
+         {_, head_pid, head_color, head_id},
+         {_, second_pid, _second_color, second_id}
        ) do
     {head_color, second_color} = select_color_delegation(head_color)
     [minutes, _incr] = Room.split_mode(mode)
@@ -111,8 +118,12 @@ defmodule OTP.Workers.Queue do
     end
   end
 
+  defp filter_queue(nil, _filter_id) do
+    []
+  end
+
   defp filter_queue(queue, filter_id) do
-    Enum.filter(queue, fn {_pid, _color, id} -> id != filter_id end)
+    Enum.filter(queue, fn {_mode, _pid, _color, id} -> id != filter_id end)
   end
 
   defp initialize_board() do

@@ -4,6 +4,29 @@ defmodule BackendWeb.LobbyChannel do
   alias OTP.Workers.Queue
   alias BackendWeb.Presence
 
+  def join("lobby:lobby", %{"color" => color, "mode" => mode, "priv" => priv}, socket) do
+    if(priv == nil) do
+      socket =
+        socket
+        |> assign(:mode, mode)
+        |> assign(:color, color)
+
+      send(self(), :after_join)
+      lobby_id = uuid()
+      socket = assign(socket, :priv, lobby_id)
+      Queue.push(mode, self(), color, {socket.assigns.user_id, socket.assigns.address}, lobby_id)
+      {:ok, %{link: lobby_id}, socket}
+    else
+      socket =
+        socket
+        |> assign(:mode, mode)
+        |> assign(:color, color)
+      send(self(), :after_join)
+      Queue.push(mode, self(), color, {socket.assigns.user_id, socket.assigns.address}, priv)
+      {:ok, socket}
+    end
+  end
+
   def join("lobby:lobby", %{"color" => color, "mode" => mode}, socket) do
     socket =
       socket
@@ -12,7 +35,7 @@ defmodule BackendWeb.LobbyChannel do
 
     send(self(), :after_join)
 
-    Queue.push(mode, self(), color, {socket.assigns.user_id, socket.assigns.address})
+    Queue.push(mode, self(), color, {socket.assigns.user_id, socket.assigns.address}, nil)
     {:ok, socket}
   end
 
@@ -26,12 +49,13 @@ defmodule BackendWeb.LobbyChannel do
 
   def terminate(_reason, socket) do
     if(Map.has_key?(socket.assigns, :mode)) do
+      if(Map.has_key?(socket.assigns, :priv)) do
+        Queue.pop(socket.assigns.priv, {socket.assigns.user_id, socket.assigns.address})
+      end
       Queue.pop(socket.assigns.mode, {socket.assigns.user_id, socket.assigns.address})
-      {:ok, socket}
-    else
-      Presence.untrack(socket, socket.assigns.user_id)
-      {:ok, socket}
     end
+    broadcast!(socket, "presence_state", Presence.list(socket))
+    {:ok, socket}
   end
 
   @spec handle_info({:found_opponent, binary(), binary()}, Phoenix.Socket.t()) ::
@@ -46,5 +70,13 @@ defmodule BackendWeb.LobbyChannel do
 
     broadcast!(socket, "presence_state", Presence.list(socket))
     {:noreply, socket}
+  end
+
+  defp uuid() do
+    uuid =
+      Integer.to_string(:rand.uniform(4_294_967_296), 32) <>
+        Integer.to_string(:rand.uniform(4_294_967_296), 32)
+
+    uuid
   end
 end
