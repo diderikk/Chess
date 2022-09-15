@@ -7,8 +7,8 @@ import type RowColumn from "../../../types/RowColumn.type";
 export default class Knight extends ChessPiece {
   image: any;
 
-  constructor(row: number, column: number, color: ChessColor) {
-    super(row, column, color);
+  constructor(row: number, column: number, color: ChessColor, moved: number) {
+    super(row, column, color, moved);
     this.image = color === ChessColor.WHITE ? WhiteImage : BlackImage;
   }
 
@@ -81,6 +81,8 @@ export default class Knight extends ChessPiece {
   }
 
   toSerialized(): String {
-    return this.color === ChessColor.BLACK ? "bH" : "wH"
-}
+    return this.color === ChessColor.BLACK
+      ? `bH${this.moved}`
+      : `wH${this.moved}`;
+  }
 }

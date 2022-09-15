@@ -3,6 +3,7 @@
   import { onDestroy, onMount } from "svelte";
   import { Router, Route } from "svelte-navigator";
   import Home from "./views/Home.svelte";
+  import LobbyLinked from "./views/LobbyLinked.svelte";
 import NotFound from "./views/NotFound.svelte";
   import Room from "./views/Room.svelte";
 
@@ -29,6 +30,9 @@ import NotFound from "./views/NotFound.svelte";
       </Route>
       <Route path=":roomId/:id" let:navigate let:params>
         <Room {socket} {navigate} {params} />
+      </Route>
+      <Route path="/lobby/:lobbyId" let:navigate let:params>
+        <LobbyLinked {socket} {navigate} {params} />
       </Route>
       <Route path="404" let:navigate>
         <NotFound {navigate}/>

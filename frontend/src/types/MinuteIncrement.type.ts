@@ -1,6 +1,6 @@
 type MinuteIncrement = {
-	minutes: number;
-	increment: number;
-}
+  minutes: number;
+  increment: number;
+};
 
 export default MinuteIncrement;

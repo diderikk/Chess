@@ -7,7 +7,6 @@
 	function handleCopyToClipboard() {
 		navigator.clipboard.writeText(text)
 		ref.select()
-
 	}
 
 	function selectInputText() {
@@ -45,7 +44,7 @@
 		height: 100%;
 		width: 80%;
 		border-radius: 7px 0 0 7px;
-		font-size: 1.1rem;
+		font-size: 1.0rem;
 		margin: 0;
 	}
 	input:focus{

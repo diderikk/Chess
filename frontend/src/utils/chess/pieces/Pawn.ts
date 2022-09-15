@@ -7,8 +7,8 @@ import type RowColumn from "../../../types/RowColumn.type";
 export default class Pawn extends ChessPiece {
   image: any;
 
-  constructor(row: number, column: number, color: ChessColor) {
-    super(row, column, color);
+  constructor(row: number, column: number, color: ChessColor, moved: number) {
+    super(row, column, color, moved);
     this.image = color === ChessColor.WHITE ? WhiteImage : BlackImage;
   }
 
@@ -96,13 +96,12 @@ export default class Pawn extends ChessPiece {
       board[this.row][this.column - 1] &&
       board[this.row][this.column - 1].color === opposingColor &&
       board[this.row][this.column - 1] instanceof Pawn &&
-      this.row === 3   &&
+      this.row === 3 &&
       board[this.row][this.column - 1].moved === 1
     )
       res.push({ row: this.row - 1, column: this.column - 1 });
     return res;
   }
-
 
   protectMoves(): RowColumn[] {
     return [
@@ -112,6 +111,8 @@ export default class Pawn extends ChessPiece {
   }
 
   toSerialized(): String {
-    return this.color === ChessColor.BLACK ? "bP" : "wP"
-}
+    return this.color === ChessColor.BLACK
+      ? `bP${this.moved}`
+      : `wP${this.moved}`;
+  }
 }

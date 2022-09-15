@@ -10,17 +10,12 @@ defmodule BackendWeb.LobbyChannel do
         socket
         |> assign(:mode, mode)
         |> assign(:color, color)
-
       send(self(), :after_join)
       lobby_id = uuid()
       socket = assign(socket, :priv, lobby_id)
       Queue.push(mode, self(), color, {socket.assigns.user_id, socket.assigns.address}, lobby_id)
       {:ok, %{link: lobby_id}, socket}
     else
-      socket =
-        socket
-        |> assign(:mode, mode)
-        |> assign(:color, color)
       send(self(), :after_join)
       Queue.push(mode, self(), color, {socket.assigns.user_id, socket.assigns.address}, priv)
       {:ok, socket}

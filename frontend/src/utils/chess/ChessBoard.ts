@@ -186,7 +186,8 @@ export default class ChessBoard {
       .map(() => Array(8).fill(null));
     for (let row = 0; row < chessBoard.length; row++) {
       for (let col = 0; col < chessBoard[row].length; col++) {
-        board[row][col] = this.serializePiece(chessBoard[row][col]);
+        const boardCol = playerType === PlayerType.BLACK ? 7 - col : col;
+        board[row][boardCol] = this.serializePiece(chessBoard[row][col]);
       }
     }
     return playerType === PlayerType.BLACK ? board : board.reverse();
@@ -196,17 +197,19 @@ export default class ChessBoard {
     stringBoard: String[][],
     playerType: PlayerType
   ): ChessPiece[][] {
+    console.log(stringBoard);
+    console.log(playerType);
     const board: ChessPiece[][] = Array(8)
       .fill(null)
       .map(() => Array(8).fill(null));
     for (let row = 0; row < stringBoard.length; row++) {
       for (let col = 0; col < stringBoard[row].length; col++) {
         const boardRow = playerType === PlayerType.BLACK ? row : 7 - row;
-        board[boardRow][col] = this.deserializePiece(
+        const boardCol = playerType === PlayerType.BLACK ? 7 - col : col;
+        board[boardRow][boardCol] = this.deserializePiece(
           stringBoard[row][col],
           boardRow,
-          col,
-          playerType
+          boardCol
         );
       }
     }
@@ -217,25 +220,25 @@ export default class ChessBoard {
   private static deserializePiece(
     piece: String,
     row: number,
-    column: number,
-    playerType: PlayerType
+    column: number
   ): ChessPiece {
     if (piece === null) return null;
     const color = piece[0] === "w" ? ChessColor.WHITE : ChessColor.BLACK;
     const pieceType = piece[1];
+    const moved = parseInt(piece.substring(2));
     switch (pieceType) {
       case "B":
-        return new Bishop(row, column, color);
+        return new Bishop(row, column, color, moved);
       case "K":
-        return new King(row, column, color);
+        return new King(row, column, color, moved);
       case "H":
-        return new Knight(row, column, color);
+        return new Knight(row, column, color, moved);
       case "P":
-        return new Pawn(row, column, color);
+        return new Pawn(row, column, color, moved);
       case "Q":
-        return new Queen(row, column, color);
+        return new Queen(row, column, color, moved);
       case "R":
-        return new Rook(row, column, color);
+        return new Rook(row, column, color, moved);
       default:
         throw new Error(`Could not deserialize piece: ${piece}`);
     }

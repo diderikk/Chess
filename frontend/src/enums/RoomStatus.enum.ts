@@ -5,7 +5,7 @@ enum RoomStatus {
   BLACK,
   REMIS,
   ABORTED,
-	REMIS_REQUESTED
+  REMIS_REQUESTED,
 }
 
 export default RoomStatus;

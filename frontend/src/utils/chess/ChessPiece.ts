@@ -10,11 +10,11 @@ export default abstract class ChessPiece {
   moved: number;
   abstract image: any;
 
-  constructor(row: number, column: number, color: ChessColor) {
+  constructor(row: number, column: number, color: ChessColor, moved: number) {
     this.column = column;
     this.row = row;
     this.color = color;
-    this.moved = 0;
+    this.moved = moved;
   }
 
   move(movePosition: RowColumn, board: ChessPiece[][]): ChessPiece[][] {
@@ -52,5 +52,5 @@ export default abstract class ChessPiece {
     return `${this.row}:${this.column} - ${this.color}`;
   }
 
-  abstract toSerialized(): String
+  abstract toSerialized(): String;
 }

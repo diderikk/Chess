@@ -1,5 +1,5 @@
 type RemisRequestResponse = {
-	color: string;
-}
+  color: string;
+};
 
 export default RemisRequestResponse;

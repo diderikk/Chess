@@ -8,8 +8,8 @@ import King from "./King";
 export default class Bishop extends ChessPiece {
   image: any;
 
-  constructor(row: number, column: number, color: ChessColor) {
-    super(row, column, color);
+  constructor(row: number, column: number, color: ChessColor, moved: number) {
+    super(row, column, color, moved);
     this.image = color === ChessColor.WHITE ? WhiteImage : BlackImage;
   }
 
@@ -94,6 +94,8 @@ export default class Bishop extends ChessPiece {
   }
 
   toSerialized(): String {
-      return this.color === ChessColor.BLACK ? "bB" : "wB"
+    return this.color === ChessColor.BLACK
+      ? `bB${this.moved}`
+      : `wB${this.moved}`;
   }
 }

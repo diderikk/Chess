@@ -36,14 +36,17 @@ defmodule OTP.Workers.Queue do
 
   @impl true
   def handle_call(:list, _from, {queues}) do
-    # return_queues = Map.filter(queues, fn {key, _val} -> String.length(key) < 6 end)
-    {:reply, queues, {queues}}
+    return_queues = Map.filter(queues, fn {key, _val} -> String.length(key) < 6 end)
+    {:reply, return_queues, {queues}}
   end
 
   @impl true
   def handle_cast({:pop, mode, id}, {queues}) do
     queue = Map.get(queues, mode) |> filter_queue(id)
-    queues = Map.put(queues, mode, queue)
+
+    queues =
+      queues |> Map.put(mode, queue) |> Map.filter(fn {key, _val} -> String.length(key) < 6 end)
+
     {:noreply, {queues}}
   end
 
@@ -70,13 +73,12 @@ defmodule OTP.Workers.Queue do
   end
 
   defp add_or_alert(mode, channel_pid, color, [head | tail], id) do
-    setup_and_alert(mode, head, {mode, channel_pid, color, id})
+    setup_and_alert(head, {mode, channel_pid, color, id})
     tail
   end
 
   defp setup_and_alert(
-         mode,
-         {_, head_pid, head_color, head_id},
+         {mode, head_pid, head_color, head_id},
          {_, second_pid, _second_color, second_id}
        ) do
     {head_color, second_color} = select_color_delegation(head_color)
@@ -128,14 +130,14 @@ defmodule OTP.Workers.Queue do
 
   defp initialize_board() do
     [
-      ["wR", "wH", "wB", "wQ", "wK", "wB", "wH", "wR"],
-      ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
+      ["wR0", "wH0", "wB0", "wQ0", "wK0", "wB0", "wH0", "wR0"],
+      ["wP0", "wP0", "wP0", "wP0", "wP0", "wP0", "wP0", "wP0"],
       [nil, nil, nil, nil, nil, nil, nil, nil],
       [nil, nil, nil, nil, nil, nil, nil, nil],
       [nil, nil, nil, nil, nil, nil, nil, nil],
       [nil, nil, nil, nil, nil, nil, nil, nil],
-      ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
-      ["bR", "bH", "bB", "bQ", "bK", "bB", "bH", "bR"]
+      ["bP0", "bP0", "bP0", "bP0", "bP0", "bP0", "bP0", "bP0"],
+      ["bR0", "bH0", "bB0", "bQ0", "bK0", "bB0", "bH0", "bR0"]
     ]
   end
 end

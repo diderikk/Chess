@@ -1,5 +1,5 @@
 type RemisResponse = {
-	decline: boolean
-}
+  decline: boolean;
+};
 
 export default RemisResponse;

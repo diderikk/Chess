@@ -8,8 +8,8 @@ import ChessBoard from "../ChessBoard";
 export default class King extends ChessPiece {
   image: any;
 
-  constructor(row: number, column: number, color: ChessColor) {
-    super(row, column, color);
+  constructor(row: number, column: number, color: ChessColor, moved: number) {
+    super(row, column, color, moved);
     this.image = color === ChessColor.WHITE ? WhiteImage : BlackImage;
   }
 
@@ -22,18 +22,50 @@ export default class King extends ChessPiece {
           validMove.column === movePosition.column
       ).length > 0
     ) {
-      if (this.moved === 0 && (movePosition.column === this.column + 2 || movePosition.column === this.column + 3)) {
+      if (
+        this.moved === 0 &&
+        this.color === ChessColor.WHITE &&
+        (movePosition.column === this.column + 2 ||
+          movePosition.column === this.column + 3)
+      ) {
         boardCopy[this.row][this.column + 3].move(
           { row: this.row, column: this.column + 1 },
           board
         );
         movePosition = { row: this.row, column: this.column + 2 };
-      } else if (this.moved === 0 && (movePosition.column === this.column - 2 || movePosition.column === this.column - 4)) {
+      } else if (
+        this.moved === 0 &&
+        this.color === ChessColor.WHITE &&
+        (movePosition.column === this.column - 2 ||
+          movePosition.column === this.column - 4)
+      ) {
         boardCopy[this.row][this.column - 4].move(
-          { row: this.row, column: this.column -1},
+          { row: this.row, column: this.column - 1 },
           board
         );
         movePosition = { row: this.row, column: this.column - 2 };
+      } else if (
+        this.moved === 0 &&
+        this.color === ChessColor.BLACK &&
+        (movePosition.column === this.column - 2 ||
+          movePosition.column === this.column - 3)
+      ) {
+        boardCopy[this.row][this.column - 3].move(
+          { row: this.row, column: this.column - 1 },
+          board
+        );
+        movePosition = { row: this.row, column: this.column - 2 };
+      } else if (
+        this.moved === 0 &&
+        this.color === ChessColor.BLACK &&
+        (movePosition.column === this.column + 2 ||
+          movePosition.column === this.column + 4)
+      ) {
+        boardCopy[this.row][this.column + 4].move(
+          { row: this.row, column: this.column + 1 },
+          board
+        );
+        movePosition = { row: this.row, column: this.column + 2 };
       }
       boardCopy[this.row][this.column] = null;
       this.row = movePosition.row;
@@ -234,6 +266,7 @@ export default class King extends ChessPiece {
       res.push({ row: this.row + 1, column: this.column - 1 });
     // Rokade right
     if (
+      this.color === ChessColor.WHITE &&
       this.moved === 0 &&
       !board[this.row][this.column + 1] &&
       !board[this.row][this.column + 2] &&
@@ -253,9 +286,37 @@ export default class King extends ChessPiece {
       res.push({ row: this.row, column: this.column + 2 });
       res.push({ row: this.row, column: this.column + 3 });
     }
+    if (
+      this.color === ChessColor.BLACK &&
+      this.moved === 0 &&
+      !board[this.row][this.column + 1] &&
+      !board[this.row][this.column + 2] &&
+      !board[this.row][this.column + 3] &&
+      board[this.row][this.column + 4] &&
+      board[this.row][this.column + 4].moved === 0 &&
+      !ChessBoard.isProtected(
+        { row: this.row, column: this.column + 1 },
+        board,
+        opposingColor
+      ) &&
+      !ChessBoard.isProtected(
+        { row: this.row, column: this.column + 2 },
+        board,
+        opposingColor
+      ) &&
+      !ChessBoard.isProtected(
+        { row: this.row, column: this.column + 3 },
+        board,
+        opposingColor
+      )
+    ) {
+      res.push({ row: this.row, column: this.column + 2 });
+      res.push({ row: this.row, column: this.column + 4 });
+    }
 
     //Rocade left
     if (
+      this.color === ChessColor.WHITE &&
       this.moved === 0 &&
       !board[this.row][this.column - 1] &&
       !board[this.row][this.column - 2] &&
@@ -281,10 +342,33 @@ export default class King extends ChessPiece {
       res.push({ row: this.row, column: this.column - 2 });
       res.push({ row: this.row, column: this.column - 4 });
     }
+    if (
+      this.color === ChessColor.BLACK &&
+      this.moved === 0 &&
+      !board[this.row][this.column - 1] &&
+      !board[this.row][this.column - 2] &&
+      board[this.row][this.column - 3] &&
+      board[this.row][this.column - 3].moved === 0 &&
+      !ChessBoard.isProtected(
+        { row: this.row, column: this.column - 1 },
+        board,
+        opposingColor
+      ) &&
+      !ChessBoard.isProtected(
+        { row: this.row, column: this.column - 2 },
+        board,
+        opposingColor
+      )
+    ) {
+      res.push({ row: this.row, column: this.column - 2 });
+      res.push({ row: this.row, column: this.column - 3 });
+    }
     return res;
   }
 
   toSerialized(): String {
-    return this.color === ChessColor.BLACK ? "bK" : "wK"
-}
+    return this.color === ChessColor.BLACK
+      ? `bK${this.moved}`
+      : `wK${this.moved}`;
+  }
 }

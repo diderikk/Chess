@@ -1,5 +1,7 @@
 enum Finished {
-	MATE, STALEMATE, NONE
+  MATE,
+  STALEMATE,
+  NONE,
 }
 
 export default Finished;

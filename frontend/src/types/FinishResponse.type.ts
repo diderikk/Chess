@@ -1,5 +1,5 @@
 type FinishResponse = {
-	winner: string
-}
+  winner: string;
+};
 
 export default FinishResponse;

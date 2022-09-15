@@ -1,5 +1,7 @@
 enum PlayerType {
-	WHITE, BLACK, SPECTATOR
+  WHITE,
+  BLACK,
+  SPECTATOR,
 }
 
 export default PlayerType;

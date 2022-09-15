@@ -12,13 +12,14 @@
   import { modeIndex } from "../stores/mode";
   import { onDestroy, onMount } from "svelte";
   import LobbyModal from "../components/LobbyModal.svelte";
-import ClipboxTextInput from "../components/ClipboxTextInput.svelte";
+  import ClipboxTextInput from "../components/ClipboxTextInput.svelte";
 
   export let navigate: NavigateFn = null;
   export let socket: Socket = null;
   let lobbyChannel: Channel = null;
   let openCustomModal: boolean = false;
   let withFriend: boolean = false;
+  let friendLink: string = "";
 
   let selected: number = 0;
   let lobbyList: Lobby[] = [];
@@ -29,14 +30,12 @@ import ClipboxTextInput from "../components/ClipboxTextInput.svelte";
 
   onDestroy(async () => {
     modeIndex.set(-1);
-    await leaveLobby()
+    await leaveLobby();
   });
 
   function handleSelect(e: CustomEvent<number>) {
     selected = e.detail;
   }
-
-  console.log(lobbyList);
 
   async function handleJoinLobby(e: CustomEvent<LobbyEvent>) {
     if (lobbyChannel) await leaveLobby();
@@ -44,22 +43,30 @@ import ClipboxTextInput from "../components/ClipboxTextInput.svelte";
 
     if (e) {
       const color = ChessColor[e.detail.color];
-      if(withFriend)
-        lobbyChannel = socket.channel(topic, { color, mode: e.detail.mode, priv: null });
-      else
-        lobbyChannel = socket.channel(topic, { color, mode: e.detail.mode });
+      if (withFriend){
+        lobbyChannel = socket.channel(topic, {
+          color,
+          mode: e.detail.mode,
+          priv: null,
+        });
+        withFriend = false
+      }
+        
+      else lobbyChannel = socket.channel(topic, { color, mode: e.detail.mode });
     } else {
       lobbyChannel = socket.channel(topic, {});
     }
 
-    lobbyChannel.join().receive("ok", (resp: {priv: string}) => {
+    lobbyChannel.join().receive("ok", (resp: { link: string | null }) => {
+      if (resp.link) friendLink = resp.link;
+      else friendLink = "";
       console.log("Joined", resp);
     });
     lobbyChannel.on("room", (resp: LobbyResponse) => {
       navigate(`${resp.roomId}/${resp.id}`);
     });
     lobbyChannel.on("presence_state", (resp: LobbyPresenceResponse) => {
-      console.log(resp)
+      console.log(resp);
       lobbyList = [];
       Object.keys(resp).forEach((mode) => {
         const lobbiesIt = resp[mode].ids.map((id) => {
@@ -94,10 +101,8 @@ import ClipboxTextInput from "../components/ClipboxTextInput.svelte";
 
   function handleCustomModalOpen(isWithFriend: boolean = false) {
     openCustomModal = true;
-    withFriend = isWithFriend
+    withFriend = isWithFriend;
   }
-
-
 </script>
 
 <div id="container">
@@ -118,8 +123,13 @@ import ClipboxTextInput from "../components/ClipboxTextInput.svelte";
     <div class="sidebar-button" on:click={() => handleCustomModalOpen()}>
       <h3>Create A Game</h3>
     </div>
-    <div class="sidebar-button" on:click={() => handleCustomModalOpen(true)}><h3>Play With A Friend</h3></div>
-    <ClipboxTextInput text="diderik.com" />
+    {#if friendLink.length === 0}
+      <div class="sidebar-button" on:click={() => handleCustomModalOpen(true)}>
+        <h3>Play With A Friend</h3>
+      </div>
+    {:else}
+      <ClipboxTextInput text={`http://localhost:8080/lobby/${friendLink}`} />
+    {/if}
   </div>
   <LobbyModal
     title="Create a game"

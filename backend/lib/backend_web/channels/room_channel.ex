@@ -49,6 +49,8 @@ defmodule BackendWeb.RoomChannel do
     {_stored_board, mode, first, second, color, last_time, _status} =
       Cache.read_memory(socket.assigns.room_id)
 
+    IO.inspect board
+
     if Room.validate_move(socket.assigns.room_id, socket.assigns.user_id, color) do
       next_color =
         Room.handle_move(socket.assigns.room_id, last_time, first, second, board, color, mode)
