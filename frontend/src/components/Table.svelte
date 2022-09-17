@@ -1,22 +1,28 @@
 <script lang="ts">
-import { createEventDispatcher } from "svelte";
-
   import type Lobby from "../types/Lobby.type";
-  import LobbyItem from "./LobbyItem.svelte";
-  
+  import TableItem from "./TableItem.svelte";
 
   export let lobbyTable: Lobby[] = [];
+  export let firstIndexName: string = "Player ID";
+  export let isLobbyTable: boolean = true;
 </script>
 
 <table>
   <tr>
-    <th>Player ID</th>
+    <th>{firstIndexName}</th>
     <th>Mode</th>
     <th>Color</th>
   </tr>
 
   {#each lobbyTable as lobby}
-    <LobbyItem on:joinLobby player={lobby.id} mode={lobby.mode} color={lobby.color} />
+    <TableItem
+      on:joinLobby
+      on:joinRoom
+      player={lobby.id}
+      mode={lobby.mode}
+      color={lobby.color}
+      isLobbyItem={isLobbyTable}
+    />
   {/each}
 </table>
 

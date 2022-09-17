@@ -4,13 +4,14 @@
   import CombinedKing from "../assets/pieces/king_combined.png";
   import { createEventDispatcher } from "svelte";
   import type LobbyEvent from "../types/LobbyEvent.type";
-import ChessColor from "../enums/ChessColor.enum";
+  import ChessColor from "../enums/ChessColor.enum";
 
   const dispatch = createEventDispatcher();
 
   export let player: string = "";
   export let mode: string = "";
   export let color: string = "";
+  export let isLobbyItem: boolean = true;
 
   function colorToIcon(color: string) {
     switch (color) {
@@ -24,7 +25,10 @@ import ChessColor from "../enums/ChessColor.enum";
   }
 
   function handleRowClick() {
-    dispatch("joinLobby", {mode, color: ChessColor[color]} as LobbyEvent);
+    if(isLobbyItem)
+      dispatch("joinLobby", { mode, color: ChessColor[color] } as LobbyEvent);
+    else
+      dispatch("joinRoom", player)
   }
 </script>
 

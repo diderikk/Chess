@@ -13,7 +13,7 @@ defmodule BackendWeb.Presence do
   alias OTP.Workers.Queue
 
   def fetch(topic, presences) do
-    if(String.starts_with?(topic, "room")) do
+    if String.starts_with?(topic, "room") do
       "room:" <> room_id = topic
       colors = presences |> Map.keys() |> ids_to_colors(room_id)
 
@@ -22,15 +22,24 @@ defmodule BackendWeb.Presence do
       end
     else
       queue = Queue.list()
+      cache = Cache.list_memory()
 
-      for {mode, queue} <- queue, into: %{} do
-        ids =
-          Enum.map(queue, fn {_mode, _pid, color, {user_id, _address}} ->
-            %{id: user_id, color: color}
-          end)
+      lobbies =
+        for {mode, queue} <- queue, into: %{} do
+          ids =
+            Enum.map(queue, fn {_mode, _pid, color, {user_id, _address}} ->
+              %{id: user_id, color: color}
+            end)
 
-        {mode, %{ids: ids, metas: []}}
-      end
+          {mode, %{ids: ids, metas: []}}
+        end
+
+      rooms =
+        for {room_id, {_, mode, _, _, _, _, _}} <- cache, into: [] do
+          %{roomId: room_id, mode: mode}
+        end
+
+      %{lobbies: lobbies, rooms: rooms}
     end
   end
 

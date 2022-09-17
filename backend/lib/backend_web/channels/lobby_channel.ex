@@ -1,15 +1,19 @@
 defmodule BackendWeb.LobbyChannel do
+  @moduledoc """
+  Lobby Channel communction module
+  """
   use Phoenix.Channel
 
   alias OTP.Workers.Queue
   alias BackendWeb.Presence
 
   def join("lobby:lobby", %{"color" => color, "mode" => mode, "priv" => priv}, socket) do
-    if(priv == nil) do
+    if priv == nil do
       socket =
         socket
         |> assign(:mode, mode)
         |> assign(:color, color)
+
       send(self(), :after_join)
       lobby_id = uuid()
       socket = assign(socket, :priv, lobby_id)
@@ -43,12 +47,14 @@ defmodule BackendWeb.LobbyChannel do
   def join(_channel, _payload, _socket), do: {:error, %{}}
 
   def terminate(_reason, socket) do
-    if(Map.has_key?(socket.assigns, :mode)) do
-      if(Map.has_key?(socket.assigns, :priv)) do
+    if Map.has_key?(socket.assigns, :mode) do
+      if Map.has_key?(socket.assigns, :priv) do
         Queue.pop(socket.assigns.priv, {socket.assigns.user_id, socket.assigns.address})
       end
+
       Queue.pop(socket.assigns.mode, {socket.assigns.user_id, socket.assigns.address})
     end
+
     broadcast!(socket, "presence_state", Presence.list(socket))
     {:ok, socket}
   end

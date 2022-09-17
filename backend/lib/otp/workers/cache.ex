@@ -1,4 +1,7 @@
 defmodule OTP.Workers.Cache do
+  @moduledoc """
+  OTP for caching chess data
+  """
   use GenServer
 
   alias OTP.Workers.Stash
@@ -10,6 +13,11 @@ defmodule OTP.Workers.Cache do
   @spec start_link(pid()) :: {:ok, pid}
   def start_link(stash_pid) do
     GenServer.start_link(__MODULE__, stash_pid, name: __MODULE__)
+  end
+
+  @spec list_memory() :: map()
+  def list_memory() do
+    GenServer.call(__MODULE__, :list)
   end
 
   @spec read_memory(binary()) :: any
@@ -67,6 +75,16 @@ defmodule OTP.Workers.Cache do
   end
 
   @impl true
+  def handle_call(:list, _from, {stash_pid, memory}) do
+    memory =
+      Map.filter(memory, fn {_key, {_, _, _, _, _, _, status}} ->
+        status == "PLAYING" || status == "REMIS_REQUEST" || status == "SETUP"
+      end)
+
+    {:reply, memory, {stash_pid, memory}}
+  end
+
+  @impl true
   def handle_call({:read, id}, _from, {_, memory} = state) do
     if Map.has_key?(memory, id) do
       {:reply, Map.get(memory, id), state}
@@ -79,6 +97,7 @@ defmodule OTP.Workers.Cache do
   def handle_call({:create, id, data}, _from, {stash_pid, memory})
       when is_binary(id) and is_tuple(data) do
     memory = Map.put(memory, id, data)
+    Process.send_after(self(), {:check_move, id}, 60_000)
     {:reply, id, {stash_pid, memory}}
   end
 
@@ -90,6 +109,7 @@ defmodule OTP.Workers.Cache do
   def handle_call({:create, data}, _from, {stash_pid, memory}) when is_tuple(data) do
     id = create_uuid(memory)
     memory = Map.put(memory, id, data)
+    Process.send_after(self(), {:check_move, id}, 60_000)
     {:reply, id, {stash_pid, memory}}
   end
 
@@ -131,6 +151,17 @@ defmodule OTP.Workers.Cache do
       end)
 
     {:noreply, {stash_pid, memory}}
+  end
+
+  @impl true
+  def handle_info({:check_move, room_id}, {stash_pid, memory}) do
+    if Map.has_key?(memory, room_id) do
+      {_, _, _, _, _, last, _} = Map.get(memory, room_id)
+      memory = if last == "", do: Map.delete(memory, room_id), else: memory
+      {:noreply, {stash_pid, memory}}
+    else
+      {:noreply, {stash_pid, memory}}
+    end
   end
 
   @impl true

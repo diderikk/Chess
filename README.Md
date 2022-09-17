@@ -21,6 +21,7 @@ NB! Did not bother to add chess functionality backend, because this was too cumb
 Additionally, I have allowed users to connect multiple instances per IP-address to allow for testing.
 
 ## Functionality
+Not fully working rooms tab, as they might be outdated
 
 ### Lobby
 * Join

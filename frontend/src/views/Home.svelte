@@ -7,8 +7,8 @@
   import type LobbyResponse from "../types/LobbyResponse.type";
   import type { NavigateFn } from "svelte-navigator";
   import type Lobby from "../types/Lobby.type";
-  import type LobbyPresenceResponse from "../types/LobbyPresenceResponse.type";
-  import LobbyTable from "../components/LobbyTable.svelte";
+  import type PresenceResponse from "../types/PresenceResponse.type";
+  import Table from "../components/Table.svelte";
   import { modeIndex } from "../stores/mode";
   import { onDestroy, onMount } from "svelte";
   import LobbyModal from "../components/LobbyModal.svelte";
@@ -23,6 +23,7 @@
 
   let selected: number = 0;
   let lobbyList: Lobby[] = [];
+  let roomList: Lobby[] = [];
 
   onMount(async () => {
     await handleJoinLobby(null);
@@ -43,16 +44,15 @@
 
     if (e) {
       const color = ChessColor[e.detail.color];
-      if (withFriend){
+      if (withFriend) {
         lobbyChannel = socket.channel(topic, {
           color,
           mode: e.detail.mode,
           priv: null,
         });
-        withFriend = false
-      }
-        
-      else lobbyChannel = socket.channel(topic, { color, mode: e.detail.mode });
+        withFriend = false;
+      } else
+        lobbyChannel = socket.channel(topic, { color, mode: e.detail.mode });
     } else {
       lobbyChannel = socket.channel(topic, {});
     }
@@ -65,15 +65,19 @@
     lobbyChannel.on("room", (resp: LobbyResponse) => {
       navigate(`${resp.roomId}/${resp.id}`);
     });
-    lobbyChannel.on("presence_state", (resp: LobbyPresenceResponse) => {
-      console.log(resp);
+    lobbyChannel.on("presence_state", (resp: PresenceResponse) => {
       lobbyList = [];
-      Object.keys(resp).forEach((mode) => {
-        const lobbiesIt = resp[mode].ids.map((id) => {
+      roomList = [];
+      Object.keys(resp.lobbies).forEach((mode) => {
+        const lobbiesIt = resp.lobbies[mode].ids.map((id) => {
           return { mode, id: id.id, color: id.color } as Lobby;
         });
         lobbyList = [...lobbyList, ...lobbiesIt];
       });
+      roomList = resp.rooms.map(
+        (room) =>
+          ({ mode: room.mode, id: room.roomId, color: "RANDOM" } as Lobby)
+      );
     });
   }
 
@@ -103,6 +107,10 @@
     openCustomModal = true;
     withFriend = isWithFriend;
   }
+
+  function joinRoom(e: CustomEvent<string>) {
+    navigate(`/${e.detail}/`);
+  }
 </script>
 
 <div id="container">
@@ -115,8 +123,15 @@
         on:joinLobby={handleJoinLobby}
         on:leaveLobby={() => handleJoinLobby(null)}
       />
+    {:else if selected === 1}
+      <Table on:joinLobby={handleJoinLobby} lobbyTable={lobbyList} />
     {:else}
-      <LobbyTable on:joinLobby={handleJoinLobby} lobbyTable={lobbyList} />
+      <Table
+        lobbyTable={roomList}
+        firstIndexName="Room ID"
+        isLobbyTable={false}
+        on:joinRoom={joinRoom}
+      />
     {/if}
   </SwitchContainer>
   <div class="sidebar">

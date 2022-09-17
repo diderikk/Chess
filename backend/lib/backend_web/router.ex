@@ -28,16 +28,4 @@ defmodule BackendWeb.Router do
       live_dashboard "/dashboard", metrics: BackendWeb.Telemetry
     end
   end
-
-  defp handle_errors(conn, %{reason: %Phoenix.Router.NoRouteError{message: message}}) do
-    conn |> put_status(404) |> json(%{error: message}) |> halt()
-  end
-
-  defp handle_errors(conn, %{reason: %{message: message}}) do
-    conn |> json(%{error: message}) |> halt()
-  end
-
-  defp handle_errors(conn, _) do
-    conn |> put_status(400) |> json(%{error: "Bad Request"}) |> halt()
-  end
 end

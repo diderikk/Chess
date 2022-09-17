@@ -4,7 +4,7 @@
   const dispatch = createEventDispatcher();
   export let selected: number = 0;
   let hoverOver: number = -1;
-  const switchItems: string[] = ["Pairing", "Lobby"];
+  const switchItems: string[] = ["Pairing", "Lobby", "Rooms"];
 
   function select(index: number) {
     dispatch("select", index);

@@ -8,7 +8,7 @@ defmodule BackendWeb.UserSocket do
   channel "lobby:*", LobbyChannel
 
   @impl true
-  def connect(%{"user_id" => "anonymous"}, socket, connect_info) do
+  def connect(%{"userId" => "anonymous"}, socket, connect_info) do
     socket =
       socket
       |> assign(:address, connect_info.peer_data.address)
@@ -18,7 +18,7 @@ defmodule BackendWeb.UserSocket do
   end
 
   @impl true
-  def connect(%{"user_id" => user_id}, socket, connect_info) do
+  def connect(%{"userId" => user_id}, socket, connect_info) do
     socket =
       socket
       |> assign(:address, connect_info.peer_data.address)

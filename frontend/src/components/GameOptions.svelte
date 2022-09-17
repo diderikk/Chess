@@ -3,22 +3,24 @@
   import remisIcon from "../assets/half.png";
   import cancelIcon from "../assets/cancel.png";
   import confirmIcon from "../assets/check.png";
+  import returnIcon from "../assets/return.png";
   import { createEventDispatcher, onDestroy } from "svelte";
   import RoomStatus from "../enums/RoomStatus.enum";
   import { message } from "../stores/message";
+  import PlayerType from "../enums/PlayerType.enum";
 
   const dispatch = createEventDispatcher();
 
   export let status: RoomStatus = RoomStatus.SETUP;
+  export let playerType: PlayerType = PlayerType.SPECTATOR;
   let selected: number = -1;
-  let messageValue: string = ""
+  let messageValue: string = "";
 
-  const messageUnSub = message.subscribe(val => {
-    messageValue = val
-  })
+  const messageUnSub = message.subscribe((val) => {
+    messageValue = val;
+  });
 
-
-  onDestroy(messageUnSub)
+  onDestroy(messageUnSub);
 
   function handleImageClick(index: number) {
     if (
@@ -28,6 +30,7 @@
     )
       return;
     if (index === 0 && status !== RoomStatus.SETUP) return;
+    if (playerType === PlayerType.SPECTATOR) return;
     selected = index;
     switch (index) {
       case 0:
@@ -78,75 +81,85 @@
   }
 
   function handleReturnToLobby() {
-    dispatch("return")
+    dispatch("return");
   }
 </script>
 
 <div id="container">
   <h4 hidden={messageValue === ""}>{messageValue}</h4>
-  <div id="img-container">
-    {#if selected >= 0 || status === RoomStatus.REMIS_REQUESTED}
-      <div class="confirm-container" on:click={() => handleConfirm(false)}>
-        <img src={cancelIcon} alt="cancel icon" />
-      </div>
-    {/if}
-    {#if status === RoomStatus.SETUP}
-      <div
-        class={selected !== 0
-          ? "option-container"
-          : "disabled-option-container"}
-        on:click={() => handleImageClick(0)}
-      >
-        <img
-          class={selected !== 0 ? "" : "disabled-img"}
-          src={cancelIcon}
-          alt="cancel icon"
-        />
-      </div>
-    {/if}
-    {#if selected !== 0 && selected !== 2 && status !== RoomStatus.REMIS_REQUESTED && !gameFinished(status)}
-      <div
-        class={status === RoomStatus.PLAYING && selected !== 1
-          ? "option-container"
-          : "disabled-option-container"}
-        on:click={() => handleImageClick(1)}
-      >
-        <img
+  {#if playerType !== PlayerType.SPECTATOR}
+    <div id="img-container">
+      {#if selected >= 0 || status === RoomStatus.REMIS_REQUESTED}
+        <div class="confirm-container" on:click={() => handleConfirm(false)}>
+          <img src={cancelIcon} alt="cancel icon" />
+        </div>
+      {/if}
+      {#if status === RoomStatus.SETUP}
+        <div
+          class={selected !== 0
+            ? "option-container"
+            : "disabled-option-container"}
+          on:click={() => handleImageClick(0)}
+        >
+          <img
+            class={selected !== 0 ? "" : "disabled-img"}
+            src={cancelIcon}
+            alt="cancel icon"
+          />
+        </div>
+      {/if}
+      {#if selected !== 0 && selected !== 2 && status !== RoomStatus.REMIS_REQUESTED && !gameFinished(status)}
+        <div
           class={status === RoomStatus.PLAYING && selected !== 1
-            ? ""
-            : "disabled-img"}
-          src={remisIcon}
-          alt="remis icon"
-        />
-      </div>
-    {/if}
-    {#if selected !== 0 && selected !== 1 && !gameFinished(status)}
-      <div
-        class={status === RoomStatus.PLAYING && selected !== 2
-          ? "option-container"
-          : "disabled-option-container"}
-        on:click={() => handleImageClick(2)}
-      >
-        <img
+            ? "option-container"
+            : "disabled-option-container"}
+          on:click={() => handleImageClick(1)}
+        >
+          <img
+            class={status === RoomStatus.PLAYING && selected !== 1
+              ? ""
+              : "disabled-img"}
+            src={remisIcon}
+            alt="remis icon"
+          />
+        </div>
+      {/if}
+      {#if selected !== 0 && selected !== 1 && !gameFinished(status)}
+        <div
           class={status === RoomStatus.PLAYING && selected !== 2
-            ? ""
-            : "disabled-img"}
-          src={resignFlagIcon}
-          alt="resign flag"
-        />
-      </div>
-    {/if}
+            ? "option-container"
+            : "disabled-option-container"}
+          on:click={() => handleImageClick(2)}
+        >
+          <img
+            class={status === RoomStatus.PLAYING && selected !== 2
+              ? ""
+              : "disabled-img"}
+            src={resignFlagIcon}
+            alt="resign flag"
+          />
+        </div>
+      {/if}
 
-    {#if selected >= 0 || status === RoomStatus.REMIS_REQUESTED}
-      <div class="confirm-container" on:click={() => handleConfirm(true)}>
-        <img src={confirmIcon} alt="confirm icon" />
-      </div>
-    {/if}
+      {#if selected >= 0 || status === RoomStatus.REMIS_REQUESTED}
+        <div class="confirm-container" on:click={() => handleConfirm(true)}>
+          <img src={confirmIcon} alt="confirm icon" />
+        </div>
+      {/if}
 
-    {#if gameFinished(status)}
-      <button id="return-button" on:click={handleReturnToLobby}>Return to lobby!</button>
-    {/if}
-  </div>
+      {#if gameFinished(status)}
+        <button id="return-button" on:click={handleReturnToLobby}
+          >Return to lobby!</button
+        >
+      {/if}
+    </div>
+  {:else}
+    <div id="img-container">
+      <div class="option-container" on:click={handleReturnToLobby}>
+        <img class="" src={returnIcon} alt="return icon" />
+      </div>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -163,7 +176,7 @@
     justify-content: space-evenly;
     width: 100%;
   }
-  #return-button{
+  #return-button {
     height: 110%;
     width: 70%;
     border-radius: 10px;

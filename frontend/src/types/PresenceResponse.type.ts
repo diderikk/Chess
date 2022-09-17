@@ -12,4 +12,14 @@ type LobbyPresenceResponse = {
   [key: string]: LobbyPresenceContent;
 };
 
-export default LobbyPresenceResponse;
+type RoomPresenceResponse = {
+  roomId: string;
+  mode: string;
+};
+
+type PresenceResponse = {
+  lobbies: LobbyPresenceResponse;
+  rooms: RoomPresenceResponse[];
+};
+
+export default PresenceResponse;

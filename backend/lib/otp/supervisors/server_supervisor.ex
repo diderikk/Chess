@@ -1,4 +1,7 @@
 defmodule OTP.Supervisors.ServerSupervisor do
+  @moduledoc """
+  Supervisor for cache, with backup handler/stash and queue
+  """
   use Supervisor
 
   alias OTP.Supervisors.CacheSupervisor

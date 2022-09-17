@@ -39,9 +39,11 @@
     });
     if (
       !activities[1] &&
-      (status === RoomStatus.PLAYING || status === RoomStatus.REMIS_REQUESTED || status === RoomStatus.SETUP)
+      (status === RoomStatus.PLAYING ||
+        status === RoomStatus.REMIS_REQUESTED ||
+        status === RoomStatus.SETUP)
     ) {
-      if(!isTicking){
+      if (!isTicking) {
         isTicking = true;
         tickAwayTime();
       }
@@ -80,6 +82,7 @@
   </div>
   <GameOptions
     {status}
+    {playerType}
     on:abort
     on:remis
     on:resign

@@ -11,8 +11,6 @@
   let lobbyChannel: Channel = null;
   let loading: boolean = true;
 
-  console.log(params);
-
   onMount(async () => {
     await handleJoinLobby();
     setTimeout(() => {
@@ -34,9 +32,7 @@
       priv: params.lobbyId,
     });
 
-    lobbyChannel.join().receive("ok", (resp) => {
-      console.log("Joined", resp);
-    });
+    lobbyChannel.join()
     lobbyChannel.on("room", (resp: LobbyResponse) => {
       navigate(`/${resp.roomId}/${resp.id}`);
     });
@@ -46,7 +42,6 @@
     if (lobbyChannel)
       return new Promise<void>((res, _rej) => {
         lobbyChannel.leave().receive("ok", () => {
-          console.log("Left");
           lobbyChannel = null;
           res();
         });

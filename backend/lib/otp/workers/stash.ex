@@ -1,4 +1,7 @@
 defmodule OTP.Workers.Stash do
+  @moduledoc """
+  OTP application for backup when errors occur in cache OTP
+  """
   use GenServer
 
   # External Implementation

@@ -13,23 +13,80 @@
   export let isChecked: boolean = false;
   export let playerType: PlayerType = PlayerType.SPECTATOR;
 
+  let pieceDragedEntered: boolean = false;
+
   function handleClick() {
     if (validMove) dispatch("move", { row, column } as RowColumn);
     else dispatch("showValidMoves", piece);
   }
 
   function classSelector() {
+    if (pieceDragedEntered) return "drag-enter";
     if (playerType === PlayerType.BLACK)
       return (row + column) % 2 === 1 ? "even" : "odd";
     else return (row + column) % 2 === 0 ? "even" : "odd";
   }
+
+  function handleDragStart(e: DragEvent, piece: ChessPiece) {
+    // status = "Dragging the element " + e.target.getAttribute("id");
+    dispatch("showDragValidMoves", piece);
+
+    e.dataTransfer.dropEffect = "move";
+    e.dataTransfer.setData("text", JSON.stringify({ row, column }));
+  }
+
+  function handleDragEnd(_e: DragEvent) {
+    dispatch("showValidMoves", piece);
+  }
+
+  function handleDragEnter(_e: DragEvent) {
+    console.log("123")
+    if (validMove) pieceDragedEntered = true;
+  }
+
+  function handleDragLeave(_e: DragEvent) {
+    if (validMove) pieceDragedEntered = false;
+  }
+
+  function handleDragDrop(e: DragEvent) {
+    e.preventDefault();
+    if (validMove) {
+      dispatch("move", { row, column } as RowColumn);
+      pieceDragedEntered = false;
+    }
+  }
 </script>
 
-<div id="container" class={classSelector()} on:click={handleClick}>
+<div
+  id="container"
+  class={pieceDragedEntered ? "drag-enter" : classSelector()}
+  on:click={handleClick}
+  on:dragenter={handleDragEnter}
+  on:dragleave={handleDragLeave}
+  on:drop={handleDragDrop}
+  on:dragover={(ev) => {
+    ev.preventDefault();
+  }}
+  on:focus={() => {}}
+  on:mouseover={() => handleDragEnter(null)}
+  on:mouseleave={() => handleDragLeave(null)}
+>
   {#if piece}
-    <img class:checked={isChecked} src={piece.image} alt="piece icon" />
+    <img
+      on:dragstart={(e) => handleDragStart(e, piece)}
+      on:dragend={handleDragEnd}
+      on:dragenter={handleDragEnter}
+      on:dragleave={handleDragLeave}
+      on:drop={handleDragDrop}
+      on:dragover={(ev) => {
+        ev.preventDefault();
+      }}
+      class:checked={isChecked}
+      src={piece.image}
+      alt="piece icon"
+    />
   {/if}
-  {#if validMove}
+  {#if validMove && !pieceDragedEntered}
     <div id="green-dot" />
   {/if}
 </div>
@@ -64,5 +121,8 @@
   }
   .odd {
     background-color: darkgray;
+  }
+  .drag-enter {
+    background-color: rgba(0, 128, 0, 0.4);
   }
 </style>

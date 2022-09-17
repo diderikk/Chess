@@ -1,4 +1,7 @@
 defmodule BackendWeb.RoomChannel do
+  @moduledoc """
+  Room Channel communction module
+  """
   use Phoenix.Channel
 
   alias OTP.Workers.Cache
@@ -6,7 +9,10 @@ defmodule BackendWeb.RoomChannel do
   alias BackendWeb.Presence
 
   def join("room:" <> room_id, %{"userId" => user_id}, socket) do
-    user_unique_id = {user_id, socket.assigns.address}
+    user_unique_id =
+      if user_id != nil,
+        do: {user_id, socket.assigns.address},
+        else: {socket.assigns.user_id, socket.assigns.address}
 
     socket =
       socket
@@ -14,6 +20,7 @@ defmodule BackendWeb.RoomChannel do
       |> assign(:room_id, room_id)
 
     send(self(), :after_join)
+    Process.send_after(self(), :check_move, 30_000)
 
     case Room.fetch_from_cache(room_id, user_unique_id)
          |> Room.subtract_time()
@@ -45,11 +52,21 @@ defmodule BackendWeb.RoomChannel do
     {:noreply, socket}
   end
 
+  def handle_info(:check_move, socket) do
+    {_, _, _, _, _, last_time, _} = Cache.read_memory(socket.assigns.room_id)
+
+    if last_time == "" do
+      Room.update_room_status(socket.assigns.room_id, "ABORTED")
+      broadcast!(socket, "aborted", %{})
+      broadcast!(socket, "presence_state", Presence.list(socket))
+    end
+
+    {:noreply, socket}
+  end
+
   def handle_in("move", %{"board" => board}, socket) do
     {_stored_board, mode, first, second, color, last_time, _status} =
       Cache.read_memory(socket.assigns.room_id)
-
-    IO.inspect board
 
     if Room.validate_move(socket.assigns.room_id, socket.assigns.user_id, color) do
       next_color =
@@ -65,7 +82,7 @@ defmodule BackendWeb.RoomChannel do
   def handle_in("expired", _payload, socket) do
     winner = Room.validate_expired(socket.assigns.room_id, socket.assigns.user_id)
 
-    if(winner == nil) do
+    if winner == nil do
       {:reply, :error, socket}
     else
       Room.update_room_status(socket.assigns.room_id, winner)
@@ -78,7 +95,7 @@ defmodule BackendWeb.RoomChannel do
     {_color, _board, _mode, _turn, _time, _opp_time, _last, status} =
       Room.fetch_from_cache(socket.assigns.room_id, socket.assigns.user_id)
 
-    if(status != "SETUP") do
+    if status != "SETUP" do
       {:reply, :error, socket}
     else
       Room.update_room_status(socket.assigns.room_id, "ABORTED")
@@ -90,7 +107,7 @@ defmodule BackendWeb.RoomChannel do
   def handle_in("loss", _payload, socket) do
     {status, winner} = Room.validate_loss(socket.assigns.room_id, socket.assigns.user_id)
 
-    if(status == :ok) do
+    if status == :ok do
       Room.update_room_status(socket.assigns.room_id, winner)
       broadcast!(socket, "finished", %{winner: winner})
       {:reply, :ok, socket}
@@ -103,7 +120,7 @@ defmodule BackendWeb.RoomChannel do
     {color, _board, _mode, _turn, _time, _opp_time, _last, _status} =
       Room.fetch_from_cache(socket.assigns.room_id, socket.assigns.user_id)
 
-    if(color != "SPECTATOR") do
+    if color != "SPECTATOR" do
       Cache.delete_memory(socket.assigns.room_id <> "remis")
       Room.update_room_status(socket.assigns.room_id, "PLAYING")
       broadcast!(socket, "remis", %{decline: true})
@@ -116,11 +133,11 @@ defmodule BackendWeb.RoomChannel do
   def handle_in("remis", %{"forced" => true}, socket) do
     cache_response = Cache.read_memory(socket.assigns.room_id <> "remis")
 
-    if(cache_response == {}) do
+    if cache_response == {} do
       {color, _board, _mode, _turn, _time, _opp_time, _last, _status} =
         Room.fetch_from_cache(socket.assigns.room_id, socket.assigns.user_id)
 
-      if(color != "SPECTATOR") do
+      if color != "SPECTATOR" do
         Cache.create_memory(socket.assigns.room_id <> "remis", {socket.assigns.user_id})
         Room.update_room_status(socket.assigns.room_id, "REMIS_REQUESTED")
         broadcast(socket, "remis_request", %{color: color})
@@ -131,7 +148,7 @@ defmodule BackendWeb.RoomChannel do
     else
       status = Room.validate_remis(socket.assigns.room_id, socket.assigns.user_id, cache_response)
 
-      if(status == :ok) do
+      if status == :ok do
         Cache.delete_memory(socket.assigns.room_id <> "remis")
         Room.update_room_status(socket.assigns.room_id, "REMIS")
         broadcast!(socket, "remis", %{})
@@ -145,11 +162,11 @@ defmodule BackendWeb.RoomChannel do
   def handle_in("remis", _payload, socket) do
     cache_response = Cache.read_memory(socket.assigns.room_id <> "remis")
 
-    if(cache_response == {}) do
+    if cache_response == {} do
       {color, _board, _mode, _turn, _time, _opp_time, _last, _status} =
         Room.fetch_from_cache(socket.assigns.room_id, socket.assigns.user_id)
 
-      if(color != "SPECTATOR") do
+      if color != "SPECTATOR" do
         Cache.create_memory(socket.assigns.room_id <> "remis", {socket.assigns.user_id})
         Room.update_room_status(socket.assigns.room_id, "REMIS_REQUESTED")
         broadcast(socket, "remis_request", %{color: color})
@@ -160,7 +177,7 @@ defmodule BackendWeb.RoomChannel do
     else
       status = Room.validate_remis(socket.assigns.room_id, socket.assigns.user_id, cache_response)
 
-      if(status == :ok) do
+      if status == :ok do
         Cache.delete_memory(socket.assigns.room_id <> "remis")
         Room.update_room_status(socket.assigns.room_id, "REMIS")
         broadcast!(socket, "remis", %{})
@@ -184,10 +201,8 @@ defmodule BackendWeb.RoomChannel do
           _ -> false
         end))
 
-    if(
-      opponent_has_timed_out &&
-        (status == "PLAYING" || status == "REMIS_REQUEST" || status == "SETUP")
-    ) do
+    if opponent_has_timed_out &&
+         (status == "PLAYING" || status == "REMIS_REQUEST" || status == "SETUP") do
       {event, status} =
         case status do
           "PLAYING" -> {"finished", color}

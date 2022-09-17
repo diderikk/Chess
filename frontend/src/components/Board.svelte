@@ -15,7 +15,6 @@
   export let nextTurn: PlayerType = PlayerType.SPECTATOR;
   let validMoves: RowColumn[] = [];
   let selectedPiece: ChessPiece = null;
-  console.log(PlayerType[nextTurn]);
 
   function handleShowValidMoves(e: CustomEvent<ChessPiece>) {
     if (selectedPiece === e.detail) {
@@ -23,6 +22,19 @@
       selectedPiece = null;
       return;
     }
+    selectedPiece = e.detail;
+    const playersPiece =
+      e.detail &&
+      PlayerType[playerType] === ChessColor[e.detail.color] &&
+      nextTurn === playerType;
+    if (e.detail && playersPiece) {
+      validMoves = ChessBoard.filterValidMovesChecked(e.detail, [
+        ...chessBoard,
+      ]);
+    } else validMoves = [];
+  }
+
+  function handleDragShowValidMoves(e: CustomEvent<ChessPiece>) {
     selectedPiece = e.detail;
     const playersPiece =
       e.detail &&
@@ -64,6 +76,7 @@
         isChecked={isChecked(column)}
         {playerType}
         on:showValidMoves={handleShowValidMoves}
+        on:showDragValidMoves={handleDragShowValidMoves}
         on:move={handleMove}
       />
     {/each}

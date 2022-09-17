@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Presence, type Channel, type Socket } from "phoenix";
-  import { onDestroy, onMount, tick } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import type { NavigateFn } from "svelte-navigator";
   import type RouteParams from "svelte-navigator/types/RouteParam";
   import Board from "../components/Board.svelte";
@@ -48,13 +48,12 @@
 
   async function handleJoinLobby() {
     roomChannel = socket.channel(`room:${params.roomId}`, {
-      userId: params.id,
+      userId: params.id !== undefined ? params.id : null,
     });
 
     roomChannel
       .join()
       .receive("ok", (resp: RoomResponse) => {
-        console.log("Joined", resp);
         presence = new Presence(roomChannel);
         if (presence)
           presence.onSync(() => {
@@ -112,19 +111,16 @@
     });
 
     roomChannel.on("finished", (resp: FinishResponse) => {
-      console.log("finished", resp);
       status = RoomStatus[resp.winner];
       openGameFinishedModal = true;
     });
 
     roomChannel.on("aborted", () => {
-      console.log("aborted");
       status = RoomStatus.ABORTED;
       openGameFinishedModal = true;
     });
 
     roomChannel.on("remis_request", (resp: RemisRequestResponse) => {
-      console.log("remis_requested");
       if (
         playerType !== PlayerType.SPECTATOR &&
         playerType !== PlayerType[resp.color]
@@ -135,7 +131,6 @@
     });
 
     roomChannel.on("remis", (resp: RemisResponse) => {
-      console.log("Remis");
       if (resp.decline) status = RoomStatus.PLAYING;
       else {
         status = RoomStatus.REMIS;

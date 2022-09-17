@@ -197,8 +197,6 @@ export default class ChessBoard {
     stringBoard: String[][],
     playerType: PlayerType
   ): ChessPiece[][] {
-    console.log(stringBoard);
-    console.log(playerType);
     const board: ChessPiece[][] = Array(8)
       .fill(null)
       .map(() => Array(8).fill(null));

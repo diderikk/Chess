@@ -1,4 +1,7 @@
 defmodule Helper.Room do
+  @moduledoc """
+  Helper functions for handling room channel communction
+  """
   alias OTP.Workers.Cache
 
   def fetch_from_cache(room_id, user_id) do
@@ -115,7 +118,7 @@ defmodule Helper.Room do
   def subtract_time({color, board, mode, "WHITE", white_time, black_time, last_move_time, status}) do
     new_white_time = subtract_time(white_time, last_move_time, 0)
 
-    if(new_white_time < 0) do
+    if new_white_time < 0 do
       {color, board, mode, "WHITE", 0, black_time, status}
     else
       {color, board, mode, "WHITE", new_white_time, black_time, status}
@@ -125,7 +128,7 @@ defmodule Helper.Room do
   def subtract_time({color, board, mode, "BLACK", white_time, black_time, last_move_time, status}) do
     new_black_time = subtract_time(black_time, last_move_time, 0)
 
-    if(new_black_time < 0) do
+    if new_black_time < 0 do
       {color, board, mode, "BLACK", white_time, 0, status}
     else
       {color, board, mode, "BLACK", white_time, new_black_time, status}

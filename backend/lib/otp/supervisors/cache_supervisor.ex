@@ -1,4 +1,7 @@
 defmodule OTP.Supervisors.CacheSupervisor do
+  @moduledoc """
+  Supervisor for cache
+  """
   use Supervisor
 
   alias OTP.Workers.Cache

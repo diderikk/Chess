@@ -1,4 +1,7 @@
 defmodule OTP.Workers.Queue do
+  @moduledoc """
+  OTP application for queuing sockets and alerting them
+  """
   use GenServer
 
   alias OTP.Workers.Cache
@@ -85,7 +88,7 @@ defmodule OTP.Workers.Queue do
     [minutes, _incr] = Room.split_mode(mode)
 
     room_id =
-      if(head_color == "WHITE") do
+      if head_color == "WHITE" do
         Cache.create_memory(
           {initialize_board(), mode, {head_id, head_color, 60 * minutes},
            {second_id, second_color, 60 * minutes}, "WHITE", "", "SETUP"}

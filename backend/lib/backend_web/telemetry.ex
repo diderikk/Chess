@@ -1,4 +1,7 @@
 defmodule BackendWeb.Telemetry do
+  @moduledoc """
+  Default telemetry
+  """
   use Supervisor
   import Telemetry.Metrics
 

@@ -6,12 +6,13 @@
   import LobbyLinked from "./views/LobbyLinked.svelte";
 import NotFound from "./views/NotFound.svelte";
   import Room from "./views/Room.svelte";
+  import Test from "./views/Test.svelte";
 
   let socket: Socket = null;
 
   onMount(() => {
     socket = new Socket("ws://localhost:4000/socket", {
-      params: { user_id: "anonymous" },
+      params: { userId: "anonymous" },
     });
     socket.connect()
   });
@@ -25,10 +26,16 @@ import NotFound from "./views/NotFound.svelte";
 {#if socket && socket.isConnected}
   <Router>
     <div>
+      <Route path="/test" let:navigate>
+        <Test {navigate} />
+      </Route>
       <Route path="/" let:navigate>
         <Home {socket} {navigate} />
       </Route>
-      <Route path=":roomId/:id" let:navigate let:params>
+      <Route path="/:roomId/:id" let:navigate let:params>
+        <Room {socket} {navigate} {params} />
+      </Route>
+      <Route path="/:roomId/" let:navigate let:params>
         <Room {socket} {navigate} {params} />
       </Route>
       <Route path="/lobby/:lobbyId" let:navigate let:params>
