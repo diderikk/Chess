@@ -4,9 +4,8 @@
   import { Router, Route } from "svelte-navigator";
   import Home from "./views/Home.svelte";
   import LobbyLinked from "./views/LobbyLinked.svelte";
-import NotFound from "./views/NotFound.svelte";
+  import NotFound from "./views/NotFound.svelte";
   import Room from "./views/Room.svelte";
-  import Test from "./views/Test.svelte";
 
   let socket: Socket = null;
 
@@ -14,9 +13,8 @@ import NotFound from "./views/NotFound.svelte";
     socket = new Socket("ws://localhost:4000/socket", {
       params: { userId: "anonymous" },
     });
-    socket.connect()
+    socket.connect();
   });
-
 
   onDestroy(() => {
     socket.disconnect();
@@ -26,9 +24,6 @@ import NotFound from "./views/NotFound.svelte";
 {#if socket && socket.isConnected}
   <Router>
     <div>
-      <Route path="/test" let:navigate>
-        <Test {navigate} />
-      </Route>
       <Route path="/" let:navigate>
         <Home {socket} {navigate} />
       </Route>
@@ -42,11 +37,11 @@ import NotFound from "./views/NotFound.svelte";
         <LobbyLinked {socket} {navigate} {params} />
       </Route>
       <Route path="404" let:navigate>
-        <NotFound {navigate}/>
+        <NotFound {navigate} />
       </Route>
     </div>
   </Router>
-  {:else}
+{:else}
   <!-- TODO: Loading animation -->
   <div />
 {/if}

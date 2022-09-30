@@ -114,7 +114,7 @@
 </script>
 
 <div id="container">
-  <div class="sidebar" />
+  <div class="sidebar-hidden" />
 
   <SwitchContainer {selected} on:select={handleSelect}>
     {#if selected === 0}
@@ -155,9 +155,17 @@
 </div>
 
 <style>
+  :global(:root) {
+    --sidebar-width: 100%;
+    --sidebar-height: 15%;
+    --flex-direction: row;
+    --home-justify-content: space-evenly;
+    --sidebar-font-size: 1rem;
+    --hidden: initial;
+  }
   .sidebar-button {
-    width: 100%;
-    height: 15%;
+    width: var(--sidebar-width);
+    height: var(--sidebar-height);
     background-color: darkgray;
     color: white;
     display: flex;
@@ -168,6 +176,8 @@
     /* border: 1px solid lightgray; */
     opacity: 0.8;
     cursor: pointer;
+    font-size: var(--sidebar-font-size);
+
   }
   .sidebar-button:hover {
     opacity: 0.7;
@@ -181,6 +191,14 @@
     justify-content: space-evenly;
     align-items: center;
   }
+  .sidebar-hidden{
+    width: 300px;
+    height: 400px;
+    display: var(--hidden);
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+  }
   h3 {
     margin: 10px;
     user-select: none;
@@ -189,7 +207,56 @@
     height: 100%;
     width: 100%;
     display: flex;
+    flex-direction: var(--flex-direction);
+    justify-content: space-evenly;
+    align-items: center;
+    overflow-y: auto;
+    /* background-color: red; */
+  }
+
+  @media only screen and (max-width: 1450px) {
+    :global(:root) {
+      --sidebar-width: 90%;
+      --sidebar-height: 15%;
+    }
+  }
+
+  @media only screen and (max-width: 1200px) {
+    :global(:root) {
+      --sidebar-width: 80%;
+      --sidebar-height: 15%;
+    }
+  }
+
+  @media only screen and (max-width: 1000px) {
+    :global(:root) {
+      --sidebar-font-size: 0.9rem;
+    }
+  }
+
+  @media only screen and (max-width: 1000px) {
+    .sidebar-hidden{
+    width: 0;
+    height: 0;
+    display: var(--hidden);
+    flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
   }
+    :global(:root) {
+      --home-justify-content: space-evenly;
+      --hidden: none;
+      --flex-direction: column;
+    }
+  }
+
+  @media only screen and (max-height: 700px) and (max-width: 800px) {
+    :global(:root) {
+      --home-justify-content: flex-start;
+      --hidden: none;
+      --flex-direction: column;
+    }
+  }
+
+
 </style>

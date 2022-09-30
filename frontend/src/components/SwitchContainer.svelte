@@ -48,9 +48,13 @@
 </div>
 
 <style>
+  :global(:root) {
+    --height: 75vh;
+    --width: 75vh;
+  }
   #container {
-    height: 75vh;
-    width: 75vh;
+    height: var(--height);
+    width: var(--width);
   }
   #child-container {
     height: 100%;
@@ -58,6 +62,7 @@
     background-color: lightgray;
     border-radius: 7px;
     overflow-y: auto;
+    overflow-x: hidden;
   }
   #switch {
     width: 100%;
@@ -81,5 +86,70 @@
   }
   h3:focus {
     outline: none;
+  }
+
+  @media only screen and (max-width: 900px) {
+    :global(:root) {
+      --width: 60vh;
+      --height: 60vh;
+    }
+  }
+
+  @media only screen and (max-width: 600px) {
+    :global(:root) {
+      --width: 50vh;
+      --height: 50vh;
+    }
+  }
+
+  @media only screen and (max-width: 600px) and (max-height: 650px) {
+    :global(:root) {
+      --width: 65vh;
+      --height: 65vh;
+    }
+  }
+
+  @media only screen and (max-width: 500px) and (max-height: 700px) {
+    :global(:root) {
+      --width: 55vh;
+      --height: 55vh;
+    }
+  }
+  
+
+
+  @media only screen and (max-width: 900px) and (max-height: 500px) {
+    :global(:root) {
+      --width: 60vw;
+      --height: 60vh;
+    }
+  }
+
+  @media only screen and (max-width: 900px) and (max-height: 450px) {
+    :global(:root) {
+      --width: 60vw;
+      --height: 66vh;
+    }
+  }
+
+  @media only screen and (max-width: 450px) {
+    :global(:root) {
+      --width: 40vh;
+      --height: 40vh;
+    }
+  }
+
+  @media only screen and (max-width: 450px) and (max-height: 800px) {
+    :global(:root) {
+      --width: 50vh;
+      --height: 50vh;
+    }
+  }
+
+  @media only screen and (max-width: 450px) and (max-height: 650px) {
+    :global(:root) {
+      --width: 60vh;
+      --height: 60vh;
+    }
   }
 </style>

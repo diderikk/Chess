@@ -42,7 +42,10 @@
   function handleModeClick(mode: MinuteIncrement, index: number) {
     if (modeSelected !== index) {
       modeIndex.set(index);
-      dispatch("joinLobby", { mode: `${mode.minutes}:${mode.increment}`, color: ChessColor.RANDOM } as LobbyEvent);
+      dispatch("joinLobby", {
+        mode: `${mode.minutes}:${mode.increment}`,
+        color: ChessColor.RANDOM,
+      } as LobbyEvent);
     } else if (modeSelected === index) {
       modeIndex.set(-1);
       dispatch("leaveLobby");
@@ -52,7 +55,7 @@
   function handleCustomClick() {
     if (modeSelected !== 11) {
       dispatch("leaveLobby");
-      dispatch("openCustomModal")
+      dispatch("openCustomModal");
     } else {
       modeIndex.set(-1);
       dispatch("leaveLobby");
@@ -99,15 +102,20 @@
 </div>
 
 <style>
+  :global(:root) {
+    --font-size: 1.7rem;
+    --grid-columns: repeat(3, 1fr);
+    --grid-rows: repeat(4, 1fr):
+  }
   .container {
     height: 100%;
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: var(--grid-columns);
+    grid-template-rows: var(--grid-rows);
     column-gap: 8px;
     row-gap: 8px;
-    font-size: 1.7rem;
+    font-size: var(--font-size);
   }
   .time-control {
     height: 100%;
@@ -150,16 +158,39 @@
     user-select: none;
   }
 
+  @media only screen and (max-width: 1000px) {
+    :global(:root) {
+      --font-size: 1.3rem;
+    }
+  }
+
   @media only screen and (max-width: 600px) {
-    .container {
-      height: 100%;
-      width: 100%;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(4, 1fr);
-      column-gap: 8px;
-      row-gap: 8px;
-      font-size: 1rem;
+    :global(:root) {
+      --font-size: 1rem;
+    }
+  }
+
+  @media only screen and (max-height: 800px) {
+    :global(:root) {
+      --font-size: 1.3rem;
+    }
+  }
+
+  @media only screen and (max-height: 650px) {
+    :global(:root) {
+      --font-size: 1rem;
+    }
+  }
+
+  @media only screen and (max-height: 550px) {
+    :global(:root) {
+      --font-size: 0.9rem;
+    }
+  }
+
+  @media only screen and (max-width: 600px) and (max-height: 800px) {
+    :global(:root) {
+      --font-size: 1rem;
     }
   }
 </style>

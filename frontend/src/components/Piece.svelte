@@ -28,11 +28,10 @@
   }
 
   function handleDragStart(e: DragEvent, piece: ChessPiece) {
-    // status = "Dragging the element " + e.target.getAttribute("id");
-    dispatch("showDragValidMoves", piece);
-
     e.dataTransfer.dropEffect = "move";
     e.dataTransfer.setData("text", JSON.stringify({ row, column }));
+
+    dispatch("showDragValidMoves", piece);
   }
 
   function handleDragEnd(_e: DragEvent) {
@@ -40,7 +39,6 @@
   }
 
   function handleDragEnter(_e: DragEvent) {
-    console.log("123")
     if (validMove) pieceDragedEntered = true;
   }
 
@@ -113,8 +111,9 @@
     background-color: rgba(255, 0, 0, 0.5);
   }
   img {
-    width: 90%;
-    height: 90%;
+    width: 100%;
+    height: 100%;
+    padding: 5px;
   }
   .even {
     background-color: antiquewhite;

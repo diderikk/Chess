@@ -57,6 +57,9 @@
 {/if}
 
 <style>
+    :global(:root) {
+      --modal-width: 30vw;
+    }
   div {
     --range-handle-inactive: green; /* inactive handle color */
     --range-handle: green; /* non-focussed handle color */
@@ -83,7 +86,7 @@
   #modal {
     position: absolute;
     background-color: white;
-    width: 30vw;
+    width: var(--modal-width);
     /* height: 80vh; */
     border-radius: 7px;
     display: flex;
@@ -154,5 +157,29 @@
   }
   .close:after {
     transform: rotate(-45deg);
+  }
+
+  @media only screen and (max-width: 1250px) {
+    :global(:root) {
+      --modal-width: 50vw
+    }
+  }
+
+  @media only screen and (max-width: 700px) {
+    :global(:root) {
+      --modal-width: 70vw
+    }
+  }
+
+  @media only screen and (max-width: 500px) {
+    :global(:root) {
+      --modal-width: 90vw
+    }
+  }
+
+  @media only screen and (max-width: 350px) {
+    :global(:root) {
+      --modal-width: 95vw
+    }
   }
 </style>
