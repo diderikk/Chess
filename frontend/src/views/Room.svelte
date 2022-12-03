@@ -23,6 +23,7 @@
   export let params: RouteParams = null;
   export let navigate: NavigateFn = null;
   export let socket: Socket = null;
+  let innerWidth = 0;
   let roomChannel: Channel = null;
   let presence: Presence = null;
   let roomPresence: RoomPresence[] = [];
@@ -37,6 +38,10 @@
   let status: RoomStatus = RoomStatus.SETUP;
   let isTicking: boolean = false;
   let openGameFinishedModal: boolean = gameFinished();
+
+  $: mobile = innerWidth < 1200;
+
+  console.log(mobile);
 
   onMount(async () => {
     await handleJoinLobby();
@@ -219,11 +224,15 @@
   }
 </script>
 
+<svelte:window bind:innerWidth />
+
 {#if isLoading}
   <!-- TODO: Loading animation -->
   <div id="loader" />
 {:else}
-  <div id="invisible" />
+  {#if !mobile}
+    <div id="invisible" />
+  {/if}
   <GameFinishedModal
     open={openGameFinishedModal}
     {status}
@@ -231,20 +240,34 @@
     on:close={closeModal}
     on:return={handleReturn}
   />
-  <Board {playerType} {chessBoard} {nextTurn} on:move={handleMove} />
-  <Clock
+
+  <Board
+    {playerType}
+    {chessBoard}
+    {nextTurn}
     {playerTime}
     {opponentTime}
     {status}
-    {playerType}
     {roomPresence}
-    on:abort={handleAbort}
-    on:remis={handleRemis}
-    on:remisDeclined={handleRemisDecline}
-    on:resign={handleResign}
-    on:return={handleReturn}
+    {mobile}
+    on:move={handleMove}
     on:timeout={handleTimeout}
   />
+  {#if !mobile}
+    <Clock
+      {playerTime}
+      {opponentTime}
+      {status}
+      {playerType}
+      {roomPresence}
+      on:abort={handleAbort}
+      on:remis={handleRemis}
+      on:remisDeclined={handleRemisDecline}
+      on:resign={handleResign}
+      on:return={handleReturn}
+      on:timeout={handleTimeout}
+    />
+  {/if}
 {/if}
 
 <style>

@@ -9,8 +9,6 @@ import Config
 
 alias OTP.Workers.Cache
 
-config :backend,
-  ecto_repos: [Backend.Repo]
 
 # Configures the endpoint
 config :backend, BackendWeb.Endpoint,
