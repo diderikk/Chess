@@ -1,7 +1,7 @@
 # Chess
 A chess application developed using Elixir/Phoenix/OTP (backend) and Svelte (frontend).   
 Made by: [diderikk](https://github.com/diderikk)  
-Website: [diderikk-chess](https://diderikk-chess.vercel.app/)
+Website: [https://diderikk-chess.vercel.app/](https://diderikk-chess.vercel.app/)
 
 ## Content
 1. [Introduction](#introduction)
@@ -24,23 +24,23 @@ Additionally, I have allowed users to connect multiple instances per IP-address 
 ## Functionality
 
 ### Lobby
-* **Match against oppenents based on time controls.**
+* **Match against oppenents based on time controls.**  
 ![](./assets/lobby.gif)
-* **Create a lobby with a selected time control.**
+* **Create a lobby with a selected time control.**  
 ![](./assets/create.gif)
-* **Create a game with a selected time control that creates a link which can be shared with a friend.**
+* **Create a game with a selected time control that creates a link which can be shared with a friend.**  
 ![](./assets/link.gif)
 * View all available lobbies that are joinable.
 * Join available lobby from lobby list.
 * View all games being played.
-* **Join a game that is being played as spectator.**
+* **Join a game that is being played as spectator.**  
 ![](./assets/spectate.gif)
 
 ### Chess
 * Chess functionality
 * Ang passang
 * Rochade
-* **Checkmate**
+* **Checkmate**  
 ![](./assets/checkmate.gif)
 
 ### Game
@@ -50,7 +50,7 @@ Additionally, I have allowed users to connect multiple instances per IP-address 
 * Accept and decline a suggested remis. 
 * Click chess piece to show available moves.
 * Click available move to move piece.
-* **Drag and drop piece.**
+* **Drag and drop piece.**  
 ![](./assets/dragdrop.gif)
 * Chess clock - refreshable (a bit inconsistent).
 
