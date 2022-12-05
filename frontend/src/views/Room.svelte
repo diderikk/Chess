@@ -281,6 +281,7 @@
     flex-direction: var(--room-direction);
     align-items: center;
     justify-content: space-evenly;
+    overflow-y: auto;
   }
   #invisible {
     height: 35vh;
