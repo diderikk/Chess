@@ -1,8 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import PlayerType from "../enums/PlayerType.enum";
   import type RowColumn from "../types/RowColumn.type";
   import type ChessPiece from "../utils/chess/ChessPiece";
+  import BlankIcon from "../assets/pieces/king_combined.png";
 
   const dispatch = createEventDispatcher();
 
@@ -82,7 +82,7 @@
       alt="piece icon"
     />
   {:else}
-    <div class="invisible" />
+    <img class="invisible" src={BlankIcon} alt="blank" />
   {/if}
   {#if validMove && !pieceDragedEntered}
     <div id="green-dot" />
@@ -111,9 +111,7 @@
     background-color: rgba(255, 0, 0, 0.5);
   }
   .invisible {
-    width: 100%;
-    height: 100%;
-    padding: 5px;
+    visibility: hidden;
   }
   img {
     width: 100%;
