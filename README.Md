@@ -1,7 +1,7 @@
 # Chess
 A chess application developed using Elixir/Phoenix/OTP (backend) and Svelte (frontend).   
 Made by: [diderikk](https://github.com/diderikk)  
-Website: TODO
+Website: [diderikk-chess](https://diderikk-chess.vercel.app/)
 
 ## Content
 1. [Introduction](#introduction)
@@ -22,8 +22,6 @@ Svelte was selected as the UI framework because of its reputation of being light
 Additionally, I have allowed users to connect multiple instances per IP-address to allow for testing. This means it is possible to play against oneself using two browser tabs. 
 
 ## Functionality
-
-Responsive
 
 ### Lobby
 * **Match against oppenents based on time controls.**
@@ -62,9 +60,14 @@ Responsive
 
 * **Add chess logic in the backend.** In the current implementation, only the frontend has implemented chess logic. As a result, there is no centralized mediator/referee to ensure that no tampering occurs during a game. This is the reason for not implementing a user system with ratings. 
 
+* **Responsiveness.** Add responsiveness to Safari and Chrome browsers. Currently, the application is only tested on Firefox. Have found bugs in the Safari browser on mobiles, where the height is not responsive. Chrome desktop browser, has a visual bug using the drag and drop functionality, where a white background appears when dragging.
+
 
 
 ## Deployment
+
+### Frontend
+Hosted and deployed on Vercel.
 
 ### API
 Hosted on a Vultr VM (the same as [ChatApp](https://github.com/diderikk/SimpleChatApp)). The domain is hosted free on Namecheap because of the Github Student Developer Pack. TLS Certificate was retrieved from Let's Encrypt. Docker used for containering of the application. 
