@@ -60,7 +60,6 @@
     lobbyChannel.join().receive("ok", (resp: { link: string | null }) => {
       if (resp.link) friendLink = resp.link;
       else friendLink = "";
-      console.log("Joined", resp);
     });
     lobbyChannel.on("room", (resp: LobbyResponse) => {
       navigate(`${resp.roomId}/${resp.id}`);
@@ -85,7 +84,6 @@
     if (lobbyChannel)
       return new Promise<void>((res, _rej) => {
         lobbyChannel.leave().receive("ok", () => {
-          console.log("Left");
           lobbyChannel = null;
           res();
         });

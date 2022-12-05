@@ -66,6 +66,7 @@
     align-items: center;
   }
   #modal {
+    z-index: 10;
     position: absolute;
     background-color: rgb(170, 196, 170);
     width: var(--modal-width);

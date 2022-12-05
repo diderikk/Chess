@@ -81,6 +81,8 @@
       src={piece.image}
       alt="piece icon"
     />
+  {:else}
+    <div class="invisible" />
   {/if}
   {#if validMove && !pieceDragedEntered}
     <div id="green-dot" />
@@ -107,6 +109,11 @@
   .checked {
     border-radius: 50%;
     background-color: rgba(255, 0, 0, 0.5);
+  }
+  .invisible {
+    width: 100%;
+    height: 100%;
+    padding: 5px;
   }
   img {
     width: 100%;

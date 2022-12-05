@@ -41,7 +41,6 @@
 
   $: mobile = innerWidth < 1500;
 
-  console.log(mobile);
 
   onMount(async () => {
     await handleJoinLobby();
