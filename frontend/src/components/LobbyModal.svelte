@@ -38,7 +38,7 @@
         <RangeSlider id="slider" bind:values={minutes} max={30} />
       </div>
       <div class="slider-container">
-        <h4>Increments in seconds: {minutes[0]}</h4>
+        <h4>Increments in seconds: {increment[0]}</h4>
         <RangeSlider id="slider" bind:values={increment} max={30} />
       </div>
     </div>
@@ -57,9 +57,9 @@
 {/if}
 
 <style>
-    :global(:root) {
-      --modal-width: 30vw;
-    }
+  :global(:root) {
+    --modal-width: 30vw;
+  }
   div {
     --range-handle-inactive: green; /* inactive handle color */
     --range-handle: green; /* non-focussed handle color */
@@ -161,25 +161,25 @@
 
   @media only screen and (max-width: 1250px) {
     :global(:root) {
-      --modal-width: 50vw
+      --modal-width: 50vw;
     }
   }
 
   @media only screen and (max-width: 700px) {
     :global(:root) {
-      --modal-width: 70vw
+      --modal-width: 70vw;
     }
   }
 
   @media only screen and (max-width: 500px) {
     :global(:root) {
-      --modal-width: 90vw
+      --modal-width: 90vw;
     }
   }
 
   @media only screen and (max-width: 350px) {
     :global(:root) {
-      --modal-width: 95vw
+      --modal-width: 95vw;
     }
   }
 </style>

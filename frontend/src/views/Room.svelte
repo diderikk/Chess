@@ -39,7 +39,7 @@
   let isTicking: boolean = false;
   let openGameFinishedModal: boolean = gameFinished();
 
-  $: mobile = innerWidth < 1200;
+  $: mobile = innerWidth < 1500;
 
   console.log(mobile);
 
@@ -230,36 +230,37 @@
   <!-- TODO: Loading animation -->
   <div id="loader" />
 {:else}
-  {#if !mobile}
-    <div id="invisible" />
-  {/if}
-  <GameFinishedModal
-    open={openGameFinishedModal}
-    {status}
-    {playerType}
-    on:close={closeModal}
-    on:return={handleReturn}
-  />
+  <div id="container">
+    {#if !mobile}
+      <div id="invisible" />
+    {/if}
+    <GameFinishedModal
+      open={openGameFinishedModal}
+      {status}
+      {playerType}
+      on:close={closeModal}
+      on:return={handleReturn}
+    />
 
-  <Board
-    {playerType}
-    {chessBoard}
-    {nextTurn}
-    {playerTime}
-    {opponentTime}
-    {status}
-    {roomPresence}
-    {mobile}
-    on:move={handleMove}
-    on:timeout={handleTimeout}
-  />
-  {#if !mobile}
+    <Board
+      {playerType}
+      {chessBoard}
+      {nextTurn}
+      {playerTime}
+      {opponentTime}
+      {status}
+      {roomPresence}
+      {mobile}
+      on:move={handleMove}
+      on:timeout={handleTimeout}
+    />
     <Clock
       {playerTime}
       {opponentTime}
       {status}
       {playerType}
       {roomPresence}
+      {mobile}
       on:abort={handleAbort}
       on:remis={handleRemis}
       on:remisDeclined={handleRemisDecline}
@@ -267,10 +268,21 @@
       on:return={handleReturn}
       on:timeout={handleTimeout}
     />
-  {/if}
+  </div>
 {/if}
 
 <style>
+  :global(:root) {
+    --room-direction: row;
+  }
+  #container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: var(--room-direction);
+    align-items: center;
+    justify-content: space-evenly;
+  }
   #invisible {
     height: 35vh;
     width: 18%;
@@ -285,5 +297,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  @media only screen and (max-width: 1500px) {
+    :global(:root) {
+      --room-direction: column;
+    }
   }
 </style>

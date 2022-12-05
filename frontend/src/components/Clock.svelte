@@ -12,6 +12,7 @@
   export let opponentTime: number = 0;
   export let status: RoomStatus = RoomStatus.SETUP;
   export let roomPresence: RoomPresence[] = [];
+  export let mobile: boolean = false;
 
   let awayTimer: number = 30;
   let isTicking: boolean = false;
@@ -67,46 +68,56 @@
 </script>
 
 <div id="container">
-  <div class="row">
-    <div class="activity-container">
-      <div
-        class="activity-ball"
-        style="background-color: {getPlayerActivity(roomPresence)[1]
-          ? 'green'
-          : 'grey'}"
-      />
-      <h3>Anonymous</h3>
-      <h3 hidden={awayTimer === 30} class="timer">{awayTimer}</h3>
+  {#if !mobile}
+    <div class="row">
+      <div class="activity-container">
+        <div
+          class="activity-ball"
+          style="background-color: {getPlayerActivity(roomPresence)[1]
+            ? 'green'
+            : 'grey'}"
+        />
+        <h3>Anonymous</h3>
+        <h3 hidden={awayTimer === 30} class="timer">{awayTimer}</h3>
+      </div>
+      <h3>{formatTime(opponentTime)}</h3>
     </div>
-    <h3>{formatTime(opponentTime)}</h3>
-  </div>
+  {/if}
+
   <GameOptions
     {status}
     {playerType}
+    {mobile}
     on:abort
     on:remis
     on:resign
     on:remisDeclined
     on:return
   />
-  <div class="row">
-    <div class="activity-container">
-      <div
-        class="activity-ball"
-        style="background-color: {getPlayerActivity(roomPresence)[0]
-          ? 'green'
-          : 'grey'}"
-      />
-      <h3>Anonymous</h3>
+  {#if !mobile}
+    <div class="row">
+      <div class="activity-container">
+        <div
+          class="activity-ball"
+          style="background-color: {getPlayerActivity(roomPresence)[0]
+            ? 'green'
+            : 'grey'}"
+        />
+        <h3>Anonymous</h3>
+      </div>
+      <h3>{formatTime(playerTime)}</h3>
     </div>
-    <h3>{formatTime(playerTime)}</h3>
-  </div>
+  {/if}
 </div>
 
 <style>
+  :global(:root) {
+    --clock-width: 18%;
+    --clock-height: 35vh;
+  }
   #container {
-    height: 35vh;
-    width: 18%;
+    height: var(--clock-height);
+    width: var(--clock-width);
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -136,4 +147,26 @@
   .timer {
     margin-left: 10px;
   }
+
+  @media only screen and (max-width: 1500px) {
+    :global(:root) {
+      --clock-width: 65vh;
+      --clock-height: 7vh;
+    }
+  } 
+
+  @media only screen and (max-width: 700px) {
+    :global(:root) {
+      --clock-width: 80vw;
+      --clock-height: 5vh;
+    }
+  } 
+
+  @media only screen and (max-width: 500px) {
+    :global(:root) {
+      --clock-width: 70vw;
+      --clock-height: 5vh;
+    }
+  } 
+
 </style>

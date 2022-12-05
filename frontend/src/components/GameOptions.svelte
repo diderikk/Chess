@@ -13,6 +13,7 @@
 
   export let status: RoomStatus = RoomStatus.SETUP;
   export let playerType: PlayerType = PlayerType.SPECTATOR;
+  export let mobile: boolean = false;
   let selected: number = -1;
   let messageValue: string = "";
 
@@ -86,7 +87,9 @@
 </script>
 
 <div id="container">
-  <h4 hidden={messageValue === ""}>{messageValue}</h4>
+  {#if !mobile}
+    <h4 hidden={messageValue === ""}>{messageValue}</h4>
+  {/if}
   {#if playerType !== PlayerType.SPECTATOR}
     <div id="img-container">
       {#if selected >= 0 || status === RoomStatus.REMIS_REQUESTED}
@@ -163,6 +166,10 @@
 </div>
 
 <style>
+  :global(:root) {
+    --options-width: 3.5rem;
+    --options-height: 3.5rem;
+  }
   #container {
     display: flex;
     flex-direction: column;
@@ -211,13 +218,34 @@
     background-color: rgba(61, 172, 61, 0.1);
   }
   img {
-    width: 3rem;
-    height: 3rem;
+    width: var(--options-width);
+    height: var(--options-height);
   }
   .disabled-img {
     opacity: 0.3;
   }
   h4 {
     margin: 20px 0;
+  }
+
+  @media only screen and (max-height: 750px) {
+    :global(:root) {
+      --options-width: 4rem;
+      --options-height: 4rem;
+    }
+  }
+
+  @media only screen and (max-width: 1500px) {
+    :global(:root) {
+      --options-width: 3rem;
+      --options-height: 3rem;
+    }
+  }
+
+  @media only screen and (max-width: 700px) {
+    :global(:root) {
+      --options-width: 2.5rem;
+      --options-height: 2.5rem;
+    }
   }
 </style>

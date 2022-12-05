@@ -68,7 +68,7 @@
   #modal {
     position: absolute;
     background-color: rgb(170, 196, 170);
-    width: 30vw;
+    width: var(--modal-width);
     /* height: 80vh; */
     border-radius: 7px;
     display: flex;

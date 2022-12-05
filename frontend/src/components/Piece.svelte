@@ -11,20 +11,18 @@
   export let column: number = 0;
   export let validMove: boolean = false;
   export let isChecked: boolean = false;
-  export let playerType: PlayerType = PlayerType.SPECTATOR;
 
   let pieceDragedEntered: boolean = false;
 
   function handleClick() {
+    pieceDragedEntered = false;
     if (validMove) dispatch("move", { row, column } as RowColumn);
     else dispatch("showValidMoves", piece);
   }
 
   function classSelector() {
     if (pieceDragedEntered) return "drag-enter";
-    if (playerType === PlayerType.BLACK)
-      return (row + column) % 2 === 1 ? "even" : "odd";
-    else return (row + column) % 2 === 0 ? "even" : "odd";
+    return (row + column) % 2 === 0 ? "even" : "odd";
   }
 
   function handleDragStart(e: DragEvent, piece: ChessPiece) {

@@ -10,7 +10,7 @@
   let socket: Socket = null;
 
   onMount(() => {
-    socket = new Socket("ws://localhost:4000/socket", {
+    socket = new Socket("wss://elixirapi.me:4002/socket", {
       params: { userId: "anonymous" },
     });
     socket.connect();

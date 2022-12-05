@@ -122,7 +122,7 @@
   }
 </script>
 
-<div>
+<div id="container">
   {#if mobile}
     <div class="row">
       <div class="activity-container">
@@ -149,7 +149,6 @@
             (rowCol) => rowCol.row === rowIndex && rowCol.column === columnIndex
           ).length > 0}
           isChecked={isChecked(column)}
-          {playerType}
           on:showValidMoves={handleShowValidMoves}
           on:showDragValidMoves={handleDragShowValidMoves}
           on:move={handleMove}
@@ -174,9 +173,14 @@
 </div>
 
 <style>
+  :global(:root) {
+    --board-size: 70vh;
+    --board-font-size: 0.9rem;
+  }
+
   #board {
-    height: 70vh;
-    width: 70vh;
+    height: var(--board-size);
+    width: var(--board-size);
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
@@ -194,8 +198,17 @@
     border-radius: 50%;
   }
   .row {
+    font-size: var(--board-font-size);
     width: 100%;
     display: flex;
     justify-content: space-between;
   }
+
+
+  @media only screen and (max-width: 700px) {
+    :global(:root) {
+      --board-size: 90vw;
+      --board-font-size: 0.8rem;
+    }
+  } 
 </style>
