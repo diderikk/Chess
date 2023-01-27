@@ -7,9 +7,6 @@
 # General application configuration
 import Config
 
-alias OTP.Workers.Cache
-
-
 # Configures the endpoint
 config :backend, BackendWeb.Endpoint,
   url: [host: "localhost"],
@@ -24,12 +21,6 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
-
-config :backend, OTP.Workers.Scheduler,
-  jobs: [
-    {"* * * * *", fn -> Cache.clean_memory() end}
-  ],
-  debug_logging: false
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

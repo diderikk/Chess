@@ -1,5 +1,7 @@
 import Config
 
+alias OTP.Workers.Cache
+
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
 # system starts, so it is typically used to load production configuration
@@ -11,6 +13,12 @@ import Config
 if System.get_env("PHX_SERVER") && System.get_env("RELEASE_NAME") do
   config :backend, BackendWeb.Endpoint, server: true
 end
+
+config :backend, OTP.Workers.Scheduler,
+  jobs: [
+    {"* * * * *", fn -> Cache.clean_memory() end}
+  ],
+  debug_logging: false
 
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.

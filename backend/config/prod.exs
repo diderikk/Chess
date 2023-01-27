@@ -10,19 +10,12 @@ import Config
 # which you should run after static files are built and
 # before starting your production server.
 config :backend, BackendWeb.Endpoint,
-  url: [host: "elixirapi.me", port: 4002],
-  check_origin:[
+  url: [host: "localhost", port: 4002],
+  check_origin: [
     "https://elixirapi.me/",
-    "http://localhost:3000",
+    "http://localhost:8080",
+    "https://chess-diderikk.vercel.app"
   ],
-  https: [
-    ip: {0, 0, 0, 0},
-    port: 4002,
-    cipher_suite: :strong,
-    keyfile: "priv/cert/privkey.pem",
-    certfile: "priv/cert/fullchain.pem"
-  ],
-  force_ssl: [rewrite_on: [:x_forwarded_proto]],
   secret_key_base: System.fetch_env!("SECRET_KEY_BASE")
 
 # Do not print debug messages in production
