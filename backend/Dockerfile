@@ -32,11 +32,11 @@ WORKDIR /app
 RUN mix local.hex --force && \
     mix local.rebar --force
 
-ARG secret
+# ARG secret
 
 # set build ENV
 ENV MIX_ENV="prod"
-ENV SECRET_KEY_BASE $secret
+ENV SECRET_KEY_BASE "U3/ZRvGwSjZ/QmlsXD1q+sCa4kt2jgjAkRCWW8gDpzc="
 
 # install mix dependencies
 COPY mix.exs mix.lock ./
@@ -75,7 +75,9 @@ RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
-ENV SECRET_KEY_BASE $secret
+
+# Changed later by the Kubernetes container
+ENV SECRET_KEY_BASE "U3/ZRvGwSjZ/QmlsXD1q+sCa4kt2jgjAkRCWW8gDpzc="
 
 WORKDIR "/app"
 RUN chown nobody /app

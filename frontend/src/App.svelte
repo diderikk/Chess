@@ -10,7 +10,7 @@
   let socket: Socket = null;
 
   onMount(() => {
-    socket = new Socket("wss://elixirapi.me:4002/socket", {
+    socket = new Socket("wss://elixirapi.me:30000/chesssocket", {
       params: { userId: "anonymous" },
     });
     socket.connect();
