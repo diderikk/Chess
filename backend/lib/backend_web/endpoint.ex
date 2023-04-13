@@ -48,6 +48,6 @@ defmodule BackendWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug CORSPlug, origin: ["http://localhost:8080"]
+  plug CORSPlug, origin: ["http://localhost:8080", "https://diderikk-chess.vercel.app"]
   plug BackendWeb.Router
 end

@@ -14,7 +14,7 @@ config :backend, BackendWeb.Endpoint,
   check_origin: [
     "https://elixirapi.me/",
     "http://localhost:8080",
-    "https://chess-diderikk.vercel.app"
+    "https://diderikk-chess.vercel.app"
   ],
   secret_key_base: System.fetch_env!("SECRET_KEY_BASE")
 

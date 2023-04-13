@@ -37,7 +37,14 @@ if config_env() == :prod do
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :backend, BackendWeb.Endpoint,
-    url: [host: host, port: 443],
+    url: [host: host, port: 30000, scheme: "https"],
+    check_origin: [
+      "https://elixirapi.me:30000",
+      "http://localhost:8080",
+      "https://chess-diderikk.vercel.app/",
+      "https://diderikk-chess.vercel.app/",
+      "https://chess.diderikk.dev/"
+    ],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
