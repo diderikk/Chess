@@ -62,7 +62,7 @@
       else friendLink = "";
     });
     lobbyChannel.on("room", (resp: LobbyResponse) => {
-      navigate(`${resp.roomId}/${resp.id}`);
+      navigate(`/${resp.roomId}/${resp.id}`);
     });
     lobbyChannel.on("presence_state", (resp: PresenceResponse) => {
       lobbyList = [];
@@ -141,7 +141,7 @@
         <h3>Play With A Friend</h3>
       </div>
     {:else}
-      <ClipboxTextInput text={`http://localhost:8080/lobby/${friendLink}`} />
+      <ClipboxTextInput text={`https://chess.diderikk.dev/lobby/${friendLink}`} />
     {/if}
   </div>
   <LobbyModal

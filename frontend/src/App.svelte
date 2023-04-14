@@ -24,19 +24,19 @@
 {#if socket && socket.isConnected}
   <Router>
     <div>
-      <Route path="/" let:navigate>
+      <Route path="/chess" let:navigate>
         <Home {socket} {navigate} />
       </Route>
-      <Route path="/:roomId/:id" let:navigate let:params>
+      <Route path="/chess/:roomId/:id" let:navigate let:params>
         <Room {socket} {navigate} {params} />
       </Route>
-      <Route path="/:roomId/" let:navigate let:params>
+      <Route path="/chess/:roomId/" let:navigate let:params>
         <Room {socket} {navigate} {params} />
       </Route>
-      <Route path="/lobby/:lobbyId" let:navigate let:params>
+      <Route path="/chess/lobby/:lobbyId" let:navigate let:params>
         <LobbyLinked {socket} {navigate} {params} />
       </Route>
-      <Route path="404" let:navigate>
+      <Route path="/chess/404" let:navigate>
         <NotFound {navigate} />
       </Route>
     </div>

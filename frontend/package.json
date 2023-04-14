@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@bulatdashiev/svelte-slider": "^1.0.3",
-    "@rollup/plugin-alias": "^3.1.9",
+    "@rollup/plugin-alias": "^5.0.0",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-image": "^2.1.1",
     "@rollup/plugin-node-resolve": "^15.0.0",
