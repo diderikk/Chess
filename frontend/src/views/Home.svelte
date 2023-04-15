@@ -62,7 +62,7 @@
       else friendLink = "";
     });
     lobbyChannel.on("room", (resp: LobbyResponse) => {
-      navigate(`/${resp.roomId}/${resp.id}`);
+      navigate(`/chess/${resp.roomId}/${resp.id}`);
     });
     lobbyChannel.on("presence_state", (resp: PresenceResponse) => {
       lobbyList = [];
@@ -107,7 +107,7 @@
   }
 
   function joinRoom(e: CustomEvent<string>) {
-    navigate(`/${e.detail}/`);
+    navigate(`/chess/${e.detail}/`);
   }
 </script>
 
@@ -141,7 +141,7 @@
         <h3>Play With A Friend</h3>
       </div>
     {:else}
-      <ClipboxTextInput text={`https://chess.diderikk.dev/lobby/${friendLink}`} />
+      <ClipboxTextInput text={`https://chess.diderikk.dev/chess/lobby/${friendLink}`} />
     {/if}
   </div>
   <LobbyModal

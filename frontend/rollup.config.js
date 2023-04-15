@@ -9,8 +9,7 @@ import sveltePreprocess from "svelte-preprocess";
 import typescript from "@rollup/plugin-typescript";
 import css from "rollup-plugin-css-only";
 
-const production =
-  !process.env.ROLLUP_WATCH || process.env.NODE_ENV === "production";
+const production = !process.env.ROLLUP_WATCH;
 
 function serve() {
   let server;
@@ -51,7 +50,7 @@ export default {
     sourcemap: true,
     format: "iife",
     name: "app",
-    file: "public/build/bundle.js",
+    file: "public/chess/build/bundle.js",
   },
   plugins: [
     image(),

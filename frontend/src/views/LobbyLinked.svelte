@@ -25,7 +25,7 @@
   async function handleJoinLobby() {
     if (lobbyChannel) await leaveLobby();
     const topic = `lobby:lobby`;
-
+    console.log(params)
     lobbyChannel = socket.channel(topic, {
       color: null,
       mode: null,
@@ -34,7 +34,7 @@
 
     lobbyChannel.join()
     lobbyChannel.on("room", (resp: LobbyResponse) => {
-      navigate(`/${resp.roomId}/${resp.id}`);
+      navigate(`/chess/${resp.roomId}/${resp.id}`);
     });
   }
 
@@ -49,7 +49,7 @@
   }
 
   function handleClick() {
-    navigate("/");
+    navigate("/chess");
   }
 </script>
 

@@ -27,23 +27,26 @@
       <Route path="/chess" let:navigate>
         <Home {socket} {navigate} />
       </Route>
+      <Route path="/chess/lobby/:lobbyId" let:navigate let:params>
+        <LobbyLinked {socket} {navigate} {params} />
+      </Route>
       <Route path="/chess/:roomId/:id" let:navigate let:params>
         <Room {socket} {navigate} {params} />
       </Route>
       <Route path="/chess/:roomId/" let:navigate let:params>
         <Room {socket} {navigate} {params} />
       </Route>
-      <Route path="/chess/lobby/:lobbyId" let:navigate let:params>
-        <LobbyLinked {socket} {navigate} {params} />
-      </Route>
       <Route path="/chess/404" let:navigate>
+        <NotFound {navigate} />
+      </Route>
+      <Route path="*" let:navigate>
         <NotFound {navigate} />
       </Route>
     </div>
   </Router>
 {:else}
   <!-- TODO: Loading animation -->
-  <div />
+  <div>...</div>
 {/if}
 
 <style>

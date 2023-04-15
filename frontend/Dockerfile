@@ -13,7 +13,6 @@ FROM node:18-alpine
 ENV NODE_ENV production
 WORKDIR /app
 COPY --from=build /app/public ./public
-RUN mv ./public/build ./public/chess/
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/yarn.lock ./yarn.lock
 RUN yarn install --frozen-lockfile --production
