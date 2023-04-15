@@ -1,7 +1,7 @@
 # Chess
 A chess application developed using Elixir/Phoenix/OTP (backend) and Svelte (frontend).   
 Made by: [diderikk](https://github.com/diderikk)  
-Website: [https://diderikk-chess.vercel.app/](https://diderikk-chess.vercel.app/)
+Website: [https://chess.diderikk.dev](https://chess.diderikk.dev)
 
 ## Content
 1. [Introduction](#introduction)
@@ -67,7 +67,7 @@ Additionally, I have allowed users to connect multiple instances per IP-address 
 ## Deployment
 
 ### Frontend
-Hosted and deployed on Vercel.
+Hosted and deployed in personal Kubernetes cluster.
 
 ### API
-Hosted on a Vultr VM (the same as [ChatApp](https://github.com/diderikk/SimpleChatApp)). The domain is hosted free on Namecheap because of the Github Student Developer Pack. TLS Certificate was retrieved from Let's Encrypt. Docker used for containering of the application. 
+Hosted and deployed in personal Kubernetes cluster.

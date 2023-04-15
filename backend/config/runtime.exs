@@ -43,7 +43,8 @@ if config_env() == :prod do
       "http://localhost:8080",
       "https://chess-diderikk.vercel.app/",
       "https://diderikk-chess.vercel.app/",
-      "https://chess.diderikk.dev/"
+      "https://chess.diderikk.dev/",
+      "https://www.chess.diderikk.dev/"
     ],
     http: [
       # Enable IPv6 and bind on all interfaces.
