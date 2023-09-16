@@ -4,7 +4,7 @@
   export let navigate: NavigateFn = null;
 
   function handleClick() {
-    navigate("/chess");
+    navigate("/");
   }
 </script>
 

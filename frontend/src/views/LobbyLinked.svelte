@@ -34,7 +34,7 @@
 
     lobbyChannel.join()
     lobbyChannel.on("room", (resp: LobbyResponse) => {
-      navigate(`/chess/${resp.roomId}/${resp.id}`);
+      navigate(`/${resp.roomId}/${resp.id}`);
     });
   }
 
@@ -49,7 +49,7 @@
   }
 
   function handleClick() {
-    navigate("/chess");
+    navigate("/");
   }
 </script>
 

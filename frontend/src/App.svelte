@@ -10,7 +10,7 @@
   let socket: Socket = null;
 
   onMount(() => {
-    socket = new Socket("wss://elixirapi.me:30000/chesssocket", {
+    socket = new Socket("wss://chess.diderikk.dev/socket", {
       params: { userId: "anonymous" },
     });
     socket.connect();
@@ -24,19 +24,19 @@
 {#if socket && socket.isConnected}
   <Router>
     <div>
-      <Route path="/chess" let:navigate>
+      <Route path="/" let:navigate>
         <Home {socket} {navigate} />
       </Route>
-      <Route path="/chess/lobby/:lobbyId" let:navigate let:params>
+      <Route path="/lobby/:lobbyId" let:navigate let:params>
         <LobbyLinked {socket} {navigate} {params} />
       </Route>
-      <Route path="/chess/:roomId/:id" let:navigate let:params>
+      <Route path="/:roomId/:id" let:navigate let:params>
         <Room {socket} {navigate} {params} />
       </Route>
-      <Route path="/chess/:roomId/" let:navigate let:params>
+      <Route path="/:roomId/" let:navigate let:params>
         <Room {socket} {navigate} {params} />
       </Route>
-      <Route path="/chess/404" let:navigate>
+      <Route path="404" let:navigate>
         <NotFound {navigate} />
       </Route>
       <Route path="*" let:navigate>

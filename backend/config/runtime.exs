@@ -41,8 +41,6 @@ if config_env() == :prod do
     check_origin: [
       "https://elixirapi.me:30000",
       "http://localhost:8080",
-      "https://chess-diderikk.vercel.app/",
-      "https://diderikk-chess.vercel.app/",
       "https://chess.diderikk.dev/",
       "https://www.chess.diderikk.dev/"
     ],

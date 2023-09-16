@@ -89,7 +89,7 @@
       .receive("error", async (resp) => {
         console.log(resp);
         await leaveRoom();
-        navigate("/chess/404");
+        navigate("/404");
       });
 
     roomChannel.on("move", (resp: MoveResponse) => {
@@ -219,7 +219,7 @@
   }
 
   function handleReturn() {
-    navigate("/chess");
+    navigate("/");
   }
 </script>
 

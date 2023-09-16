@@ -12,7 +12,7 @@ defmodule BackendWeb.Endpoint do
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
-  socket "/chesssocket", BackendWeb.UserSocket,
+  socket "/socket", BackendWeb.UserSocket,
     websocket: [connect_info: [:peer_data]],
     longpoll: false
 

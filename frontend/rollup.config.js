@@ -50,7 +50,7 @@ export default {
     sourcemap: true,
     format: "iife",
     name: "app",
-    file: "public/chess/build/bundle.js",
+    file: "public/build/bundle.js",
   },
   plugins: [
     image(),
